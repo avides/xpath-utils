@@ -1,0 +1,36 @@
+<!DOCTYPE root>
+<root>
+	<singleString>anyStringValue</singleString>
+	<singleInt>123</singleInt>
+	<singleDouble>19.99</singleDouble>
+	<singleBoolean>true</singleBoolean>
+	<singleBoolean>false</singleBoolean>
+	<map>
+		<entry>
+			<string>anyKey1</string>
+			<string>234</string>
+		</entry>
+		<entry>
+			<string>anyKey2</string>
+			<string>345</string>
+		</entry>
+		<entry>
+			<string>anyKey3</string>
+		</entry>
+		<entry>
+			<string>anyKey4</string>
+			<string>456</string>
+		</entry>
+	</map>
+	<list>
+		<value>567</value>
+		<value>678</value>
+		<value>789</value>
+	</list>
+	<singleEnum>ENUM_VALUE2</singleEnum>
+	<emptyValue></emptyValue>
+	<zonedDateTime>2017-11-08T15:55:32Z</zonedDateTime>
+	<localDateTime>2017-11-08T15:55:32</localDateTime>
+	<localDate>2017-11-08</localDate>
+	<localTime>14:36:37</localTime>
+</root>
