@@ -153,8 +153,8 @@ class AnyObject
 
 AnyObject anyObject = XPathUtils.fromXml(xml, AnyObject.class);
 
+// should output 'anyValue - 123':
 System.out.println(anyObject.stringValue + " - " + anyObject.integerValue);
-// should output 'anyValue - 123';
 
 // should output '[value1, value2, value3]':
 System.out.println(anyObject.stringList);
