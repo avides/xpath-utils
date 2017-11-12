@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.avides.xpath</groupId>
   <artifactId>xpath-utils</artifactId>
-  <version>1.0.0.RELEASE</version>
+  <version>1.0.1.RELEASE</version>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

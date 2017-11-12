@@ -1,6 +1,7 @@
 package com.avides.xpath.utils.converter;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
 /**
@@ -15,9 +16,32 @@ import java.util.function.Function;
  */
 public class ToZonedDateTimeConverter implements Function<String, ZonedDateTime>
 {
+    private final DateTimeFormatter formatter;
+
+    /**
+     * Default-constructor to use the default formatter
+     * {@link DateTimeFormatter#ISO_ZONED_DATE_TIME} for parsing
+     */
+    public ToZonedDateTimeConverter()
+    {
+        formatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
+    }
+
+    /**
+     * Constructor to use a given {@link DateTimeFormatter DateTimeFormatter}
+     *
+     * @param formatter
+     *            the {@link DateTimeFormatter DateTimeFormatter} to use for
+     *            parsing
+     */
+    public ToZonedDateTimeConverter(DateTimeFormatter formatter)
+    {
+        this.formatter = formatter;
+    }
+
     @Override
     public ZonedDateTime apply(String t)
     {
-        return t != null ? ZonedDateTime.parse(t) : null;
+        return t != null ? ZonedDateTime.parse(t, formatter) : null;
     }
 }

@@ -1,6 +1,7 @@
 package com.avides.xpath.utils.converter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
 /**
@@ -15,9 +16,32 @@ import java.util.function.Function;
  */
 public class ToLocalDateConverter implements Function<String, LocalDate>
 {
+    private final DateTimeFormatter formatter;
+
+    /**
+     * Default-constructor to use the default formatter
+     * {@link DateTimeFormatter#ISO_LOCAL_DATE} for parsing
+     */
+    public ToLocalDateConverter()
+    {
+        formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+    }
+
+    /**
+     * Constructor to use a given {@link DateTimeFormatter DateTimeFormatter}
+     *
+     * @param formatter
+     *            the {@link DateTimeFormatter DateTimeFormatter} to use for
+     *            parsing
+     */
+    public ToLocalDateConverter(DateTimeFormatter formatter)
+    {
+        this.formatter = formatter;
+    }
+
     @Override
     public LocalDate apply(String t)
     {
-        return t != null ? LocalDate.parse(t) : null;
+        return t != null ? LocalDate.parse(t, formatter) : null;
     }
 }

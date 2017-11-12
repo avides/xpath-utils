@@ -11,11 +11,14 @@ xpath-utils
 <dependency>
     <groupId>com.avides.xpath</groupId>
     <artifactId>xpath-utils</artifactId>
-    <version>1.0.0.RELEASE</version>
+    <version>1.0.1.RELEASE</version>
 </dependency>
 ```
 #### Available methods
 ```java
+XPathUtils.getRootElementFromInputStream(InputStream inputStream);
+XPathUtils.getRootElementFromReader(Reader reader);
+XPathUtils.getRootElementFromFile(File file);
 XPathUtils.getRootElementFromXml(String xml);
 
 XPathUtils.queryBool(Node root, String xPath);
@@ -59,6 +62,8 @@ XPathUtils.each(Node root, String xPath);
 
 XPathUtils.fromRoot(Element root, Class<T> type);
 XPathUtils.fromXml(String xml, Class<T> type);
+
+XPathUtils.registerConverterInstance(Function<String, T> converter);
 ```
 #### Examples
 ```xml
@@ -162,4 +167,9 @@ System.out.println(anyObject.stringMap);
 
 // should output '{key1=100, key2=200}':
 System.out.println(anyObject.integerMap);
+```
+#### Using Converter with arguments
+```java
+ToLocalDateConverter converter = new ToLocalDateConverter(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+XPathUtils.registerConverterInstance(converter);
 ```

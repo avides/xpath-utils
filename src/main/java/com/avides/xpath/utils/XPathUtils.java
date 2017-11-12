@@ -1050,6 +1050,22 @@ public abstract class XPathUtils
         return ((nodes != null) && (nodes.size() > 0));
     }
 
+    /**
+     * Registeres the given explicit instance of a
+     * {@link java.util.function.Function Converter} to use, if a
+     * {@link java.util.function.Function Converter} of that class is used
+     *
+     * @param converter
+     *            The instance of the {@link java.util.function.Function
+     *            Converter} to use if a {@link java.util.function.Function
+     *            Converter} of that class is used
+     */
+    @SuppressWarnings("unchecked")
+    public static void registerConverterInstance(Function<String, ?> converter)
+    {
+        converterCache.put((Class<? extends Function<String, ?>>) converter.getClass(), converter);
+    }
+
     @SuppressWarnings("unchecked")
     private static <T> Function<String, T> getConverter(Class<? extends Function<String, T>> converterClass)
     {

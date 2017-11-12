@@ -2,9 +2,9 @@ package com.avides.xpath.utils.converter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import java.util.Arrays;
 
-import com.avides.xpath.utils.converter.ToBooleanConverter;
+import org.junit.Test;
 
 public class ToBooleanConverterTest
 {
@@ -45,5 +45,54 @@ public class ToBooleanConverterTest
         assertThat(toBooleanConverter.apply("nein")).isFalse();
         assertThat(toBooleanConverter.apply("non")).isFalse();
         assertThat(toBooleanConverter.apply("none")).isFalse();
+    }
+
+    @Test
+    public void testConstructorWithTrueValuesAsList()
+    {
+        ToBooleanConverter converter = new ToBooleanConverter(Arrays.asList("foo", "bar"));
+
+        assertThat(converter.apply("foo")).isTrue();
+        assertThat(converter.apply("bar")).isTrue();
+        assertThat(converter.apply(" FOO ")).isTrue();
+        assertThat(converter.apply("true")).isFalse();
+        assertThat(converter.apply(null)).isNull();
+    }
+
+    @Test
+    public void testConstructorWithTrueValuesAsArray()
+    {
+        ToBooleanConverter converter = new ToBooleanConverter(new String[]
+        { "foo", "bar" });
+
+        assertThat(converter.apply("foo")).isTrue();
+        assertThat(converter.apply("bar")).isTrue();
+        assertThat(converter.apply(" FOO ")).isTrue();
+        assertThat(converter.apply("true")).isFalse();
+        assertThat(converter.apply(null)).isNull();
+    }
+
+    @Test
+    public void testConstructorWithTrueValuesAsVarArgs()
+    {
+        ToBooleanConverter converter = new ToBooleanConverter("foo", "bar");
+
+        assertThat(converter.apply("foo")).isTrue();
+        assertThat(converter.apply("bar")).isTrue();
+        assertThat(converter.apply(" FOO ")).isTrue();
+        assertThat(converter.apply("true")).isFalse();
+        assertThat(converter.apply(null)).isNull();
+    }
+
+    @Test
+    public void testConstructorWithSingleTrueValue()
+    {
+        ToBooleanConverter converter = new ToBooleanConverter("foo");
+
+        assertThat(converter.apply("foo")).isTrue();
+        assertThat(converter.apply("bar")).isFalse();
+        assertThat(converter.apply(" FOO ")).isTrue();
+        assertThat(converter.apply("true")).isFalse();
+        assertThat(converter.apply(null)).isNull();
     }
 }
