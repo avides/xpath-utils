@@ -3,6 +3,9 @@ package com.avides.xpath.utils;
 import static com.avides.xpath.utils.utils.ReflectionUtils.doWithFields;
 import static com.avides.xpath.utils.utils.ReflectionUtils.makeAccessible;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.Reader;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +59,61 @@ public class XPathUnmarshaller
      */
     public <T> T unmarshal(String xml, Class<T> type) throws ParsingException
     {
-        return unmarshal(XPathUtils.getRootElementFromXml(xml), type);
+        return unmarshal(XPathUtils.getRootElement(xml), type);
+    }
+
+    /**
+     * unmarshalls from {@link java.io.InputStream InputStream}
+     *
+     * @param inputStream
+     *            {@link java.io.InputStream InputStream} to unmarshal from
+     * @param type
+     *            the type of the class with the annotated fields
+     * @return new instance of the given type unmarshalled by the given
+     *         {@link java.io.InputStream InputStream}
+     * @throws ParsingException
+     *             if the {@link java.io.InputStream InputStream} can not be
+     *             parsed (invalid xml)
+     */
+    public <T> T unmarshal(InputStream inputStream, Class<T> type) throws ParsingException
+    {
+        return unmarshal(XPathUtils.getRootElement(inputStream), type);
+    }
+
+    /**
+     * unmarshalls from {@link java.io.Reader Reader}
+     *
+     * @param inputStream
+     *            {@link java.io.Reader Reader} to unmarshal from
+     * @param type
+     *            the type of the class with the annotated fields
+     * @return new instance of the given type unmarshalled by the given
+     *         {@link java.io.Reader Reader}
+     * @throws ParsingException
+     *             if the {@link java.io.Reader Reader} can not be parsed
+     *             (invalid xml)
+     */
+    public <T> T unmarshal(Reader reader, Class<T> type) throws ParsingException
+    {
+        return unmarshal(XPathUtils.getRootElement(reader), type);
+    }
+
+    /**
+     * unmarshalls from {@link java.io.File File}
+     *
+     * @param file
+     *            {@link java.io.File File} to unmarshal from
+     * @param type
+     *            the type of the class with the annotated fields
+     * @return new instance of the given type unmarshalled by the given
+     *         {@link java.io.File File}
+     * @throws ParsingException
+     *             if the {@link java.io.File File} can not be parsed (invalid
+     *             xml)
+     */
+    public <T> T unmarshal(File file, Class<T> type) throws ParsingException
+    {
+        return unmarshal(XPathUtils.getRootElement(file), type);
     }
 
     /**

@@ -75,7 +75,7 @@ public abstract class XPathUtils
      * @throws ParsingException
      *             if the {nu.xom.Element Element} can not be build
      */
-    public static Element getRootElementFromInputStream(InputStream inputStream) throws ParsingException
+    public static Element getRootElement(InputStream inputStream) throws ParsingException
     {
         return buildElement(inputStream, input -> new Builder().build(input)).getRootElement();
     }
@@ -91,7 +91,7 @@ public abstract class XPathUtils
      * @throws ParsingException
      *             if the {nu.xom.Element Element} can not be build
      */
-    public static Element getRootElementFromReader(Reader reader) throws ParsingException
+    public static Element getRootElement(Reader reader) throws ParsingException
     {
         return buildElement(reader, input -> new Builder().build(input)).getRootElement();
     }
@@ -107,7 +107,7 @@ public abstract class XPathUtils
      * @throws ParsingException
      *             if the {nu.xom.Element Element} can not be build
      */
-    public static Element getRootElementFromFile(File file) throws ParsingException
+    public static Element getRootElement(File file) throws ParsingException
     {
         return buildElement(file, input -> new Builder().build(input)).getRootElement();
     }
@@ -123,9 +123,9 @@ public abstract class XPathUtils
      * @throws ParsingException
      *             if the xml can not be parsed (invalid xml)
      */
-    public static Element getRootElementFromXml(String xml) throws ParsingException
+    public static Element getRootElement(String xml) throws ParsingException
     {
-        return getRootElementFromInputStream(new ByteArrayInputStream(xml.getBytes()));
+        return getRootElement(new ByteArrayInputStream(xml.getBytes()));
     }
 
     /**
@@ -151,6 +151,82 @@ public abstract class XPathUtils
     public static <T> T fromRoot(Element root, Class<T> type)
     {
         return XPathUnmarshaller.getInstance().unmarshal(root, type);
+    }
+
+    /**
+     * Unmarshals the given {@link java.io.InputStream InputStream} to a new
+     * instance of the given {@link java.lang.Class Class}, using annotations
+     * {@link com.avides.xpath.utils.annotations.XPathFirst XPathFirst},
+     * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
+     * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
+     *
+     * @param inputStream
+     *            the {@link java.io.InputStream InputStream} to be unmarshalled
+     * @param type
+     *            the {@link java.lang.Class Class} of the wanted new instance
+     * @return a new instance of the given {@link java.lang.Class Class},
+     *         unmarshalled from the given {@link java.io.InputStream
+     *         InputStream}
+     * @throws ParsingException
+     *             if the {@link java.io.InputStream InputStream} can not be
+     *             parsed (invalid xml)
+     *
+     * @see {@link com.avides.xpath.utils.XPathUnmarshaller#unmarshal(String, Class)}
+     * @see {@link com.avides.xpath.utils.XPathUtils#fromRoot(Element, Class)}
+     */
+    public static <T> T fromInputStream(InputStream inputStream, Class<T> type) throws ParsingException
+    {
+        return XPathUnmarshaller.getInstance().unmarshal(inputStream, type);
+    }
+
+    /**
+     * Unmarshals the given {@link java.io.Reader Reader} to a new instance of
+     * the given {@link java.lang.Class Class}, using annotations
+     * {@link com.avides.xpath.utils.annotations.XPathFirst XPathFirst},
+     * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
+     * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
+     *
+     * @param reader
+     *            the {@link java.io.Reader Reader} to be unmarshalled
+     * @param type
+     *            the {@link java.lang.Class Class} of the wanted new instance
+     * @return a new instance of the given {@link java.lang.Class Class},
+     *         unmarshalled from the given {@link java.io.Reader Reader}
+     * @throws ParsingException
+     *             if the {@link java.io.Reader Reader} can not be parsed
+     *             (invalid xml)
+     *
+     * @see {@link com.avides.xpath.utils.XPathUnmarshaller#unmarshal(String, Class)}
+     * @see {@link com.avides.xpath.utils.XPathUtils#fromRoot(Element, Class)}
+     */
+    public static <T> T fromReader(Reader reader, Class<T> type) throws ParsingException
+    {
+        return XPathUnmarshaller.getInstance().unmarshal(reader, type);
+    }
+
+    /**
+     * Unmarshals the given {@link java.io.File File} to a new instance of the
+     * given {@link java.lang.Class Class}, using annotations
+     * {@link com.avides.xpath.utils.annotations.XPathFirst XPathFirst},
+     * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
+     * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
+     *
+     * @param file
+     *            the {@link java.io.File File} to be unmarshalled
+     * @param type
+     *            the {@link java.lang.Class Class} of the wanted new instance
+     * @return a new instance of the given {@link java.lang.Class Class},
+     *         unmarshalled from the given {@link java.io.Reader Reader}
+     * @throws ParsingException
+     *             if the {@link java.io.File File} can not be parsed (invalid
+     *             xml)
+     *
+     * @see {@link com.avides.xpath.utils.XPathUnmarshaller#unmarshal(String, Class)}
+     * @see {@link com.avides.xpath.utils.XPathUtils#fromRoot(Element, Class)}
+     */
+    public static <T> T fromFile(File file, Class<T> type) throws ParsingException
+    {
+        return XPathUnmarshaller.getInstance().unmarshal(file, type);
     }
 
     /**

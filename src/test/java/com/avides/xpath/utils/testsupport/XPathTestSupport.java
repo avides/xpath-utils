@@ -29,7 +29,7 @@ public abstract class XPathTestSupport
         File xmlFile = new File(getClass().getClassLoader().getResource("test.xml").getFile());
         byte[] encoded = Files.readAllBytes(xmlFile.toPath());
         xml = new String(encoded, Charset.forName("UTF-8"));
-        root = XPathUtils.getRootElementFromFile(xmlFile);
+        root = XPathUtils.getRootElement(xmlFile);
     }
 
     public static class AnyObject

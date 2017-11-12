@@ -16,10 +16,10 @@ xpath-utils
 ```
 #### Available methods
 ```java
-XPathUtils.getRootElementFromInputStream(InputStream inputStream);
-XPathUtils.getRootElementFromReader(Reader reader);
-XPathUtils.getRootElementFromFile(File file);
-XPathUtils.getRootElementFromXml(String xml);
+XPathUtils.getRootElement(InputStream inputStream);
+XPathUtils.getRootElement(Reader reader);
+XPathUtils.getRootElement(File file);
+XPathUtils.getRootElement(String xml);
 
 XPathUtils.queryBool(Node root, String xPath);
 XPathUtils.queryBoolean(Node root, String xPath);
@@ -60,7 +60,11 @@ XPathUtils.hasNodes(Nodes nodes);
 
 XPathUtils.each(Node root, String xPath);
 
+// marshalling-methods:
 XPathUtils.fromRoot(Element root, Class<T> type);
+XPathUtils.fromInputStream(InputStream inputStream, Class<T> type);
+XPathUtils.fromReader(Reader reader, Class<T> type);
+XPathUtils.fromFile(File file, Class<T> type);
 XPathUtils.fromXml(String xml, Class<T> type);
 
 XPathUtils.registerConverterInstance(Function<String, T> converter);

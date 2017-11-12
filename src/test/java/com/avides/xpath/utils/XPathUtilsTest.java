@@ -113,19 +113,19 @@ public class XPathUtilsTest extends XPathTestSupport
     @Test(expected = ParsingException.class)
     public void testGetRootElementFromXml() throws ParsingException
     {
-        XPathUtils.getRootElementFromXml("anyInvalidXml");
+        XPathUtils.getRootElement("anyInvalidXml");
     }
 
     @Test
     public void testGetRootElementFromReader() throws ParsingException
     {
-        assertThat(XPathUtils.getRootElementFromReader(new StringReader("<root></root>")).getLocalName()).isEqualTo("root");
+        assertThat(XPathUtils.getRootElement(new StringReader("<root></root>")).getLocalName()).isEqualTo("root");
     }
 
     @Test
     public void testGetRootElementFromFile() throws ParsingException, URISyntaxException
     {
-        assertThat(XPathUtils.getRootElementFromFile(new File(getClass().getClassLoader().getResource("test.xml").getFile())).getLocalName()).isEqualTo("root");
+        assertThat(XPathUtils.getRootElement(new File(getClass().getClassLoader().getResource("test.xml").getFile())).getLocalName()).isEqualTo("root");
     }
 
     @Test
