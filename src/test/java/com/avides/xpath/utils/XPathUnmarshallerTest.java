@@ -21,7 +21,9 @@ public class XPathUnmarshallerTest extends XPathTestSupport
 
         assertThat(anyObject.getAnyString()).isEqualTo("anyStringValue");
         assertThat(anyObject.getAnyInteger()).isEqualTo(123);
+        assertThat(anyObject.getAnyIntegerWithoutGivenConverterClass()).isEqualTo(123);
         assertThat(anyObject.getAnyInt()).isEqualTo(123);
+        assertThat(anyObject.getAnyIntWithoutGivenConverterClass()).isEqualTo(123);
         assertThat(anyObject.getNotExistingString()).isNull();
         assertThat(anyObject.getNotExistingInteger()).isNull();
         assertThat(anyObject.getNotExistingInt()).isZero();

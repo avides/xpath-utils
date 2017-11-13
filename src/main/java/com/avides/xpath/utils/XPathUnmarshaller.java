@@ -7,8 +7,14 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +22,17 @@ import org.slf4j.LoggerFactory;
 import com.avides.xpath.utils.annotations.XPathFirst;
 import com.avides.xpath.utils.annotations.XPathList;
 import com.avides.xpath.utils.annotations.XPathMap;
+import com.avides.xpath.utils.converter.ToBooleanConverter;
+import com.avides.xpath.utils.converter.ToCharacterConverter;
+import com.avides.xpath.utils.converter.ToDoubleConverter;
+import com.avides.xpath.utils.converter.ToFloatConverter;
+import com.avides.xpath.utils.converter.ToIntegerConverter;
+import com.avides.xpath.utils.converter.ToLocalDateConverter;
+import com.avides.xpath.utils.converter.ToLocalDateTimeConverter;
+import com.avides.xpath.utils.converter.ToLocalTimeConverter;
+import com.avides.xpath.utils.converter.ToLongConverter;
+import com.avides.xpath.utils.converter.ToShortConverter;
+import com.avides.xpath.utils.converter.ToZonedDateTimeConverter;
 import com.avides.xpath.utils.utils.ReflectionUtils;
 
 import nu.xom.Element;
@@ -40,6 +57,30 @@ public class XPathUnmarshaller
     private static final Logger log = LoggerFactory.getLogger(XPathUnmarshaller.class);
 
     private static XPathUnmarshaller instance;
+
+    private static final Map<Class<?>, Function<String, ?>> defaultToTypeConverter = new HashMap<>();
+
+    static
+    {
+        defaultToTypeConverter.put(Integer.class, XPathUtils.getConverter(ToIntegerConverter.class));
+        defaultToTypeConverter.put(Long.class, XPathUtils.getConverter(ToLongConverter.class));
+        defaultToTypeConverter.put(Short.class, XPathUtils.getConverter(ToShortConverter.class));
+        defaultToTypeConverter.put(Double.class, XPathUtils.getConverter(ToDoubleConverter.class));
+        defaultToTypeConverter.put(Float.class, XPathUtils.getConverter(ToFloatConverter.class));
+        defaultToTypeConverter.put(Boolean.class, XPathUtils.getConverter(ToBooleanConverter.class));
+        defaultToTypeConverter.put(Character.class, XPathUtils.getConverter(ToCharacterConverter.class));
+        defaultToTypeConverter.put(int.class, XPathUtils.getConverter(ToIntegerConverter.class));
+        defaultToTypeConverter.put(long.class, XPathUtils.getConverter(ToLongConverter.class));
+        defaultToTypeConverter.put(short.class, XPathUtils.getConverter(ToShortConverter.class));
+        defaultToTypeConverter.put(double.class, XPathUtils.getConverter(ToDoubleConverter.class));
+        defaultToTypeConverter.put(float.class, XPathUtils.getConverter(ToFloatConverter.class));
+        defaultToTypeConverter.put(boolean.class, XPathUtils.getConverter(ToBooleanConverter.class));
+        defaultToTypeConverter.put(char.class, XPathUtils.getConverter(ToCharacterConverter.class));
+        defaultToTypeConverter.put(LocalDate.class, XPathUtils.getConverter(ToLocalDateConverter.class));
+        defaultToTypeConverter.put(LocalDateTime.class, XPathUtils.getConverter(ToLocalDateTimeConverter.class));
+        defaultToTypeConverter.put(LocalTime.class, XPathUtils.getConverter(ToLocalTimeConverter.class));
+        defaultToTypeConverter.put(ZonedDateTime.class, XPathUtils.getConverter(ToZonedDateTimeConverter.class));
+    }
 
     private XPathUnmarshaller()
     {
@@ -146,20 +187,20 @@ public class XPathUnmarshaller
                 Object value = XPathUtils.queryFirst(root, xPathFirst.value(), xPathFirst.converterClass());
                 setFieldValueExtended(field, target, value);
             }
-            XPathMap xPathMap = field.getAnnotation(XPathMap.class);
-            if (xPathMap != null)
+            XPathList xPathList = field.getAnnotation(XPathList.class);
+            if (xPathList != null)
             {
-                Map<?, ?> value = XPathUtils.queryMap(root, xPathMap.entryXPath(), xPathMap.keySubXPath(), xPathMap.valueSubXPath(),
-                    xPathMap.keyConverterClass(), xPathMap.valueConverterClass());
+                List<?> value = XPathUtils.queryList(root, xPathList.value(), xPathList.converterClass());
                 if (!setFieldValueSimple(field, target, value))
                 {
                     throw new RuntimeException("could not set value " + value + " for field " + field + " on target " + target + " (field-types not matching)");
                 }
             }
-            XPathList xPathList = field.getAnnotation(XPathList.class);
-            if (xPathList != null)
+            XPathMap xPathMap = field.getAnnotation(XPathMap.class);
+            if (xPathMap != null)
             {
-                List<?> value = XPathUtils.queryList(root, xPathList.value(), xPathList.converterClass());
+                Map<?, ?> value = XPathUtils.queryMap(root, xPathMap.entryXPath(), xPathMap.keySubXPath(), xPathMap.valueSubXPath(),
+                    xPathMap.keyConverterClass(), xPathMap.valueConverterClass());
                 if (!setFieldValueSimple(field, target, value))
                 {
                     throw new RuntimeException("could not set value " + value + " for field " + field + " on target " + target + " (field-types not matching)");
@@ -194,11 +235,24 @@ public class XPathUnmarshaller
                 }
                 return true;
             }
-            else if (ReflectionUtils.isAssignable(field.getType(), value.getClass()))
+            else
             {
-                makeAccessible(field);
-                field.set(target, value);
-                return true;
+                if (ReflectionUtils.isAssignable(field.getType(), value.getClass()))
+                {
+                    makeAccessible(field);
+                    field.set(target, value);
+                    return true;
+                }
+                else if ((value.getClass() == String.class) && !ReflectionUtils.isAssignable(field.getType(), value.getClass()))
+                {
+                    Function<String, ?> converter = getDefaultConverterToType(field.getType());
+                    if (converter != null)
+                    {
+                        makeAccessible(field);
+                        field.set(target, converter.apply((String) value));
+                        return true;
+                    }
+                }
             }
         }
         catch (IllegalArgumentException | IllegalAccessException e)
@@ -241,6 +295,32 @@ public class XPathUnmarshaller
         {
             throw new RuntimeException("could not set value " + value + " for field " + field + " on target " + target, e);
         }
+    }
+
+    /**
+     * Registers a default {@link java.util.function.Function Converter} to use
+     * for unmarshalling when the value (after an annotated
+     * {@link java.util.function.Function Converter}-conversion) is a
+     * {@link java.lang.String String } but the field-type is not. So when the
+     * registered default-{@link java.util.function.Function Converter}s contain
+     * a matching one for the wanted field-type, it is used to convert the value
+     * to the wanted type
+     *
+     * @param type
+     *            the type that matches the field-type and the given
+     *            {@link java.util.function.Function Converter}-result-type
+     * @param converter
+     *            the {@link java.util.function.Function Converter} to use for
+     *            converting to the given type
+     */
+    public static void registerDefaultConverterInstanceToType(Class<?> type, Function<String, ?> converter)
+    {
+        defaultToTypeConverter.put(type, converter);
+    }
+
+    private static Function<String, ?> getDefaultConverterToType(Class<?> type)
+    {
+        return defaultToTypeConverter.get(type);
     }
 
     /**

@@ -1142,8 +1142,32 @@ public abstract class XPathUtils
         converterCache.put((Class<? extends Function<String, ?>>) converter.getClass(), converter);
     }
 
+    /**
+     * Registers a default {@link java.util.function.Function Converter} to use
+     * for unmarshalling when the value (after an annotated
+     * {@link java.util.function.Function Converter}-conversion) is a
+     * {@link java.lang.String String } but the field-type is not. So when the
+     * registered default-{@link java.util.function.Function Converter}s contain
+     * a matching one for the wanted field-type, it is used to convert the value
+     * to the wanted type
+     *
+     * @param type
+     *            the type that matches the field-type and the given
+     *            {@link java.util.function.Function Converter}-result-type
+     * @param converter
+     *            the {@link java.util.function.Function Converter} to use for
+     *            converting to the given type
+     * 
+     * @see XPathUnmarshaller#registerDefaultConverterInstanceToType(Class,
+     *      Function)
+     */
+    public static void registerDefaultConverterInstanceToType(Class<?> type, Function<String, ?> converter)
+    {
+        XPathUnmarshaller.registerDefaultConverterInstanceToType(type, converter);
+    }
+
     @SuppressWarnings("unchecked")
-    private static <T> Function<String, T> getConverter(Class<? extends Function<String, T>> converterClass)
+    static <T> Function<String, T> getConverter(Class<? extends Function<String, T>> converterClass)
     {
         Function<String, T> converter = (Function<String, T>) converterCache.get(converterClass);
         if (converter == null)

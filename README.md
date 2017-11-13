@@ -11,7 +11,7 @@ xpath-utils
 <dependency>
     <groupId>com.avides.xpath</groupId>
     <artifactId>xpath-utils</artifactId>
-    <version>1.0.1.RELEASE</version>
+    <version>1.0.2.RELEASE</version>
 </dependency>
 ```
 #### Available methods
@@ -68,6 +68,7 @@ XPathUtils.fromFile(File file, Class<T> type);
 XPathUtils.fromXml(String xml, Class<T> type);
 
 XPathUtils.registerConverterInstance(Function<String, T> converter);
+XPathUtils.registerDefaultConverterInstanceToType(Class<?> type, Function<String, ?> converter)
 ```
 #### Examples
 ```xml
@@ -138,7 +139,10 @@ class AnyObject
 {
     @XPathFirst("anyStringValue")
     String stringValue;
-    
+
+    // All known default-converters are already registered for conversion 
+    // to default-field-types, so the converterClass could be left here, 
+    // but is set for illustration:    
     @XPathFirst(value = "anyIntegerValue", converterClass = ToIntegerConverter.class)
     Integer integerValue;
     
@@ -176,4 +180,9 @@ System.out.println(anyObject.integerMap);
 ```java
 ToLocalDateConverter converter = new ToLocalDateConverter(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 XPathUtils.registerConverterInstance(converter);
+```
+#### Register a default-converter for a special field-type
+```java
+ToLocalDateConverter converter = new ToLocalDateConverter(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+XPathUrils.registerDefaultConverterInstanceToType(LocalDate.class, converter);
 ```

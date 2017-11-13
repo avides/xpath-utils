@@ -43,8 +43,14 @@ public abstract class XPathTestSupport
         @XPathFirst(value = "singleInt", converterClass = ToIntegerConverter.class)
         private Integer anyInteger;
 
+        @XPathFirst(value = "singleInt")
+        private Integer anyIntegerWithoutGivenConverterClass;
+
         @XPathFirst(value = "singleInt", converterClass = ToIntegerConverter.class)
         private int anyInt;
+
+        @XPathFirst(value = "singleInt")
+        private int anyIntWithoutGivenConverterClass;
 
         @XPathFirst(value = "notExistingString")
         private String notExistingString;
@@ -77,9 +83,19 @@ public abstract class XPathTestSupport
             return anyInteger;
         }
 
+        public Integer getAnyIntegerWithoutGivenConverterClass()
+        {
+            return anyIntegerWithoutGivenConverterClass;
+        }
+
         public int getAnyInt()
         {
             return anyInt;
+        }
+
+        public int getAnyIntWithoutGivenConverterClass()
+        {
+            return anyIntWithoutGivenConverterClass;
         }
 
         public String getNotExistingString()
