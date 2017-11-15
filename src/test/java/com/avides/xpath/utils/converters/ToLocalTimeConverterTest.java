@@ -1,4 +1,4 @@
-package com.avides.xpath.utils.converter;
+package com.avides.xpath.utils.converters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,6 +6,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import org.junit.Test;
+
+import com.avides.xpath.utils.converters.ToLocalTimeConverter;
 
 public class ToLocalTimeConverterTest
 {

@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.function.Function;
 
-import com.avides.xpath.utils.converter.NoneConverter;
+import com.avides.xpath.utils.converters.NoneConverter;
 
 /**
  * Annotation to set on fields which should be enriched by xPath-query-results
@@ -40,18 +40,32 @@ public @interface XPathMap
     String valueSubXPath();
 
     /**
-     * the type of a {@link java.util.function Function Converter} to convert
-     * each entry-key with. Default:
-     * {@link com.avides.xpath.utils.converter.NoneConverter} which does not convert
+     * the {@link Class} of a {@link Function Converter} to convert each
+     * entry-key with. Default: {@link NoneConverter} which does not convert
      * anything
      */
     Class<? extends Function<String, ?>> keyConverterClass() default NoneConverter.class;
 
     /**
-     * the type of a {@link java.util.function Function Converter} to convert
-     * each entry-value with. Default:
-     * {@link com.avides.xpath.utils.converter.NoneConverter} which does not convert
+     * the {@link Class} of a {@link Function Converter} to convert each
+     * entry-value with. Default: {@link NoneConverter} which does not convert
      * anything
      */
     Class<? extends Function<String, ?>> valueConverterClass() default NoneConverter.class;
+
+    /**
+     * if set to any other {@link Class} than {@link String String.class}, the
+     * {@link #keyConverterClass()} is ignored and the found {@link nu.xom.Nodes
+     * Nodes} for the keys will be unmarshalled to the given {@link Class}.
+     * Default: {@link String String.class}
+     */
+    Class<?> keySubTypeClass() default String.class;
+
+    /**
+     * if set to any other {@link Class} than {@link String String.class}, the
+     * {@link #valueConverterClass()} is ignored and the found
+     * {@link nu.xom.Nodes Nodes} for the values will be unmarshalled to the
+     * given {@link Class}. Default: {@link String String.class}
+     */
+    Class<?> valueSubTypeClass() default String.class;
 }

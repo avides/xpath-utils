@@ -33,4 +33,33 @@
 	<localDateTime>2017-11-08T15:55:32</localDateTime>
 	<localDate>2017-11-08</localDate>
 	<localTime>14:36:37</localTime>
+	<subObject>
+	   <singleString>anySubObjectStringValue</singleString>
+	</subObject>
+	<subMap>
+	   <entry>
+	       <key>
+	           <singleString>anySubMapKey1</singleString>
+	       </key>
+	       <value>
+	           <singleString>anySubMapValue1</singleString>
+	       </value>
+	   </entry>
+	   <entry>
+           <key>
+               <singleString>anySubMapKey2</singleString>
+           </key>
+           <value>
+               <singleString>anySubMapValue2</singleString>
+           </value>
+       </entry>
+	</subMap>
+	<subList>
+	   <value>
+	       <singleString>anySubListValue1</singleString>
+	   </value>
+	   <value>
+           <singleString>anySubListValue2</singleString>
+       </value>
+	</subList>
 </root>

@@ -1,18 +1,15 @@
 package com.avides.xpath.utils;
 
 import static com.avides.xpath.utils.utils.ReflectionUtils.doWithFields;
-import static com.avides.xpath.utils.utils.ReflectionUtils.makeAccessible;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -22,35 +19,38 @@ import org.slf4j.LoggerFactory;
 import com.avides.xpath.utils.annotations.XPathFirst;
 import com.avides.xpath.utils.annotations.XPathList;
 import com.avides.xpath.utils.annotations.XPathMap;
-import com.avides.xpath.utils.converter.ToBooleanConverter;
-import com.avides.xpath.utils.converter.ToCharacterConverter;
-import com.avides.xpath.utils.converter.ToDoubleConverter;
-import com.avides.xpath.utils.converter.ToFloatConverter;
-import com.avides.xpath.utils.converter.ToIntegerConverter;
-import com.avides.xpath.utils.converter.ToLocalDateConverter;
-import com.avides.xpath.utils.converter.ToLocalDateTimeConverter;
-import com.avides.xpath.utils.converter.ToLocalTimeConverter;
-import com.avides.xpath.utils.converter.ToLongConverter;
-import com.avides.xpath.utils.converter.ToShortConverter;
-import com.avides.xpath.utils.converter.ToZonedDateTimeConverter;
-import com.avides.xpath.utils.utils.ReflectionUtils;
+import com.avides.xpath.utils.converters.ToBooleanConverter;
+import com.avides.xpath.utils.converters.ToCharacterConverter;
+import com.avides.xpath.utils.converters.ToDoubleConverter;
+import com.avides.xpath.utils.converters.ToFloatConverter;
+import com.avides.xpath.utils.converters.ToIntegerConverter;
+import com.avides.xpath.utils.converters.ToLocalDateConverter;
+import com.avides.xpath.utils.converters.ToLocalDateTimeConverter;
+import com.avides.xpath.utils.converters.ToLocalTimeConverter;
+import com.avides.xpath.utils.converters.ToLongConverter;
+import com.avides.xpath.utils.converters.ToShortConverter;
+import com.avides.xpath.utils.converters.ToZonedDateTimeConverter;
+import com.avides.xpath.utils.processors.XPathFirstProcessor;
+import com.avides.xpath.utils.processors.XPathListProcessor;
+import com.avides.xpath.utils.processors.XPathMapProcessor;
 
 import nu.xom.Element;
 import nu.xom.ParsingException;
 
 /**
  * Class for unmarshalling xml to new instances of classes which have fields
- * that are annotated with {@link com.avides.xpath.utils.annotations.XPathFirst
- * XPathFirst}, {@link com.avides.xpath.utils.annotations.XPathList XPathList}
- * or {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}. Such classes
- * must have a public no-args-constructor
+ * that are annotated with {@link XPathFirst}, {@link XPathList} or
+ * {@link XPathMap}. Such classes must have a public no-args-constructor
  *
  * @author Martin Schumacher
  * @since 1.0.0.RELEASE
  *
- * @see {@link com.avides.xpath.utils.XPathUtils}
- * @see {@link com.avides.xpath.utils.XPathUtils#fromRoot(Element, Class)}
- * @see {@link com.avides.xpath.utils.XPathUtils#fromXml(String, Class)}
+ * @see XPathUtils
+ * @see XPathUtils#fromXml(String, Class)
+ * @see XPathUtils#fromInputStream(InputStream, Class)
+ * @see XPathUtils#fromReader(Reader, Class)
+ * @see XPathUtils#fromFile(File, Class)
+ * @see XPathUtils#fromRoot(Element, Class)
  */
 public class XPathUnmarshaller
 {
@@ -58,28 +58,11 @@ public class XPathUnmarshaller
 
     private static XPathUnmarshaller instance;
 
-    private static final Map<Class<?>, Function<String, ?>> defaultToTypeConverter = new HashMap<>();
+    private static final Map<Class<?>, Function<String, ?>> defaultToTypeConverters = new HashMap<>();
 
     static
     {
-        defaultToTypeConverter.put(Integer.class, XPathUtils.getConverter(ToIntegerConverter.class));
-        defaultToTypeConverter.put(Long.class, XPathUtils.getConverter(ToLongConverter.class));
-        defaultToTypeConverter.put(Short.class, XPathUtils.getConverter(ToShortConverter.class));
-        defaultToTypeConverter.put(Double.class, XPathUtils.getConverter(ToDoubleConverter.class));
-        defaultToTypeConverter.put(Float.class, XPathUtils.getConverter(ToFloatConverter.class));
-        defaultToTypeConverter.put(Boolean.class, XPathUtils.getConverter(ToBooleanConverter.class));
-        defaultToTypeConverter.put(Character.class, XPathUtils.getConverter(ToCharacterConverter.class));
-        defaultToTypeConverter.put(int.class, XPathUtils.getConverter(ToIntegerConverter.class));
-        defaultToTypeConverter.put(long.class, XPathUtils.getConverter(ToLongConverter.class));
-        defaultToTypeConverter.put(short.class, XPathUtils.getConverter(ToShortConverter.class));
-        defaultToTypeConverter.put(double.class, XPathUtils.getConverter(ToDoubleConverter.class));
-        defaultToTypeConverter.put(float.class, XPathUtils.getConverter(ToFloatConverter.class));
-        defaultToTypeConverter.put(boolean.class, XPathUtils.getConverter(ToBooleanConverter.class));
-        defaultToTypeConverter.put(char.class, XPathUtils.getConverter(ToCharacterConverter.class));
-        defaultToTypeConverter.put(LocalDate.class, XPathUtils.getConverter(ToLocalDateConverter.class));
-        defaultToTypeConverter.put(LocalDateTime.class, XPathUtils.getConverter(ToLocalDateTimeConverter.class));
-        defaultToTypeConverter.put(LocalTime.class, XPathUtils.getConverter(ToLocalTimeConverter.class));
-        defaultToTypeConverter.put(ZonedDateTime.class, XPathUtils.getConverter(ToZonedDateTimeConverter.class));
+        resetDefaultConverterInstancesToType();
     }
 
     private XPathUnmarshaller()
@@ -97,6 +80,8 @@ public class XPathUnmarshaller
      * @return new instance of the given type unmarshalled by the given xml
      * @throws ParsingException
      *             if the xml can not be parsed (invalid xml)
+     *
+     * @since 1.0.0.RELEASE
      */
     public <T> T unmarshal(String xml, Class<T> type) throws ParsingException
     {
@@ -104,17 +89,18 @@ public class XPathUnmarshaller
     }
 
     /**
-     * unmarshalls from {@link java.io.InputStream InputStream}
+     * unmarshalls from {@link InputStream}
      *
      * @param inputStream
-     *            {@link java.io.InputStream InputStream} to unmarshal from
+     *            {@link InputStream} to unmarshal from
      * @param type
      *            the type of the class with the annotated fields
      * @return new instance of the given type unmarshalled by the given
-     *         {@link java.io.InputStream InputStream}
+     *         {@link InputStream}
      * @throws ParsingException
-     *             if the {@link java.io.InputStream InputStream} can not be
-     *             parsed (invalid xml)
+     *             if the {@link InputStream} can not be parsed (invalid xml)
+     *
+     * @since 1.0.2.RELEASE
      */
     public <T> T unmarshal(InputStream inputStream, Class<T> type) throws ParsingException
     {
@@ -122,17 +108,18 @@ public class XPathUnmarshaller
     }
 
     /**
-     * unmarshalls from {@link java.io.Reader Reader}
+     * unmarshalls from {@link Reader}
      *
-     * @param inputStream
-     *            {@link java.io.Reader Reader} to unmarshal from
+     * @param reader
+     *            {@link Reader} to unmarshal from
      * @param type
      *            the type of the class with the annotated fields
      * @return new instance of the given type unmarshalled by the given
-     *         {@link java.io.Reader Reader}
+     *         {@link Reader}
      * @throws ParsingException
-     *             if the {@link java.io.Reader Reader} can not be parsed
-     *             (invalid xml)
+     *             if the {@link Reader} can not be parsed (invalid xml)
+     *
+     * @since 1.0.2.RELEASE
      */
     public <T> T unmarshal(Reader reader, Class<T> type) throws ParsingException
     {
@@ -140,17 +127,18 @@ public class XPathUnmarshaller
     }
 
     /**
-     * unmarshalls from {@link java.io.File File}
+     * unmarshalls from {@link File}
      *
      * @param file
-     *            {@link java.io.File File} to unmarshal from
+     *            {@link File} to unmarshal from
      * @param type
      *            the type of the class with the annotated fields
      * @return new instance of the given type unmarshalled by the given
-     *         {@link java.io.File File}
+     *         {@link File}
      * @throws ParsingException
-     *             if the {@link java.io.File File} can not be parsed (invalid
-     *             xml)
+     *             if the {@link File} can not be parsed (invalid xml)
+     *
+     * @since 1.0.2.RELEASE
      */
     public <T> T unmarshal(File file, Class<T> type) throws ParsingException
     {
@@ -158,14 +146,16 @@ public class XPathUnmarshaller
     }
 
     /**
-     * unmarshalls from {@link nu.xom.Element Element}
+     * unmarshalls from {@link Element}
      *
      * @param root
-     *            {@link nu.xom.Element Element} to unmarshal from
+     *            {@link Element} to unmarshal from
      * @param type
      *            the type of the class with the annotated fields
      * @return new instance of the given type unmarshalled by the given
-     *         {@link nu.xom.Element Element}
+     *         {@link Element}
+     *
+     * @since 1.0.0.RELEASE
      */
     public <T> T unmarshal(Element root, Class<T> type)
     {
@@ -181,155 +171,88 @@ public class XPathUnmarshaller
         }
         doWithFields(type, field ->
         {
-            XPathFirst xPathFirst = field.getAnnotation(XPathFirst.class);
-            if (xPathFirst != null)
-            {
-                Object value = XPathUtils.queryFirst(root, xPathFirst.value(), xPathFirst.converterClass());
-                setFieldValueExtended(field, target, value);
-            }
-            XPathList xPathList = field.getAnnotation(XPathList.class);
-            if (xPathList != null)
-            {
-                List<?> value = XPathUtils.queryList(root, xPathList.value(), xPathList.converterClass());
-                if (!setFieldValueSimple(field, target, value))
-                {
-                    throw new RuntimeException("could not set value " + value + " for field " + field + " on target " + target + " (field-types not matching)");
-                }
-            }
-            XPathMap xPathMap = field.getAnnotation(XPathMap.class);
-            if (xPathMap != null)
-            {
-                Map<?, ?> value = XPathUtils.queryMap(root, xPathMap.entryXPath(), xPathMap.keySubXPath(), xPathMap.valueSubXPath(),
-                    xPathMap.keyConverterClass(), xPathMap.valueConverterClass());
-                if (!setFieldValueSimple(field, target, value))
-                {
-                    throw new RuntimeException("could not set value " + value + " for field " + field + " on target " + target + " (field-types not matching)");
-                }
-            }
+            new XPathFirstProcessor(root, field, target, defaultToTypeConverters).process();
+            new XPathListProcessor(root, field, target, defaultToTypeConverters).process();
+            new XPathMapProcessor(root, field, target, defaultToTypeConverters).process();
         });
         return target;
     }
 
-    private static boolean setFieldValueSimple(Field field, Object target, Object value)
-    {
-        try
-        {
-            if (value == null)
-            {
-                makeAccessible(field);
-                if (!field.getType().isPrimitive())
-                {
-                    field.set(target, null);
-                }
-                else
-                {
-                    Object nullValue = ReflectionUtils.getNullValue(field.getType());
-                    if (nullValue != null)
-                    {
-                        field.set(target, nullValue);
-                    }
-                    else
-                    {
-                        log.warn("no null-value for primitive byte is implemented yet, so don't set anything for field " + field + " on target " + target);
-                    }
-                }
-                return true;
-            }
-            else
-            {
-                if (ReflectionUtils.isAssignable(field.getType(), value.getClass()))
-                {
-                    makeAccessible(field);
-                    field.set(target, value);
-                    return true;
-                }
-                else if ((value.getClass() == String.class) && !ReflectionUtils.isAssignable(field.getType(), value.getClass()))
-                {
-                    Function<String, ?> converter = getDefaultConverterToType(field.getType());
-                    if (converter != null)
-                    {
-                        makeAccessible(field);
-                        field.set(target, converter.apply((String) value));
-                        return true;
-                    }
-                }
-            }
-        }
-        catch (IllegalArgumentException | IllegalAccessException e)
-        {
-            throw new RuntimeException("could not set value " + value + " for field " + field + " on target " + target, e);
-        }
-        return false;
-    }
-
-    @SuppressWarnings(
-    { "rawtypes", "unchecked" })
-    private static void setFieldValueExtended(Field field, Object target, Object value)
-    {
-        try
-        {
-            if (!setFieldValueSimple(field, target, value))
-            {
-                if ((field.getType().isEnum() && String.class.isAssignableFrom(value.getClass())))
-                {
-                    Enum enumValue;
-                    if (((String) value).isEmpty())
-                    {
-                        enumValue = null;
-                    }
-                    else
-                    {
-                        enumValue = Enum.valueOf((Class<Enum>) field.getType(), (String) value);
-                    }
-                    makeAccessible(field);
-                    field.set(target, enumValue);
-                }
-                else
-                {
-                    throw new RuntimeException("could not set value " + value + " for field " + field + " on target " + target + " (field-types not matching)");
-                }
-            }
-
-        }
-        catch (IllegalArgumentException | IllegalAccessException e)
-        {
-            throw new RuntimeException("could not set value " + value + " for field " + field + " on target " + target, e);
-        }
-    }
-
     /**
-     * Registers a default {@link java.util.function.Function Converter} to use
-     * for unmarshalling when the value (after an annotated
-     * {@link java.util.function.Function Converter}-conversion) is a
-     * {@link java.lang.String String } but the field-type is not. So when the
-     * registered default-{@link java.util.function.Function Converter}s contain
-     * a matching one for the wanted field-type, it is used to convert the value
-     * to the wanted type
+     * Registers a default {@link Function Converter} to use for unmarshalling
+     * when the value (after an annotated {@link Function Converter}-conversion)
+     * is a {@link String} but the field-type is not. So when the registered
+     * default-{@link Function Converter}s contain a matching one for the wanted
+     * field-type, it is used to convert the value to the wanted type
      *
      * @param type
      *            the type that matches the field-type and the given
-     *            {@link java.util.function.Function Converter}-result-type
+     *            {@link Function Converter}-result-type
      * @param converter
-     *            the {@link java.util.function.Function Converter} to use for
-     *            converting to the given type
+     *            the {@link Function Converter} to use for converting to the
+     *            given type
+     *
+     * @since 1.0.2.RELEASE
      */
     public static void registerDefaultConverterInstanceToType(Class<?> type, Function<String, ?> converter)
     {
-        defaultToTypeConverter.put(type, converter);
-    }
-
-    private static Function<String, ?> getDefaultConverterToType(Class<?> type)
-    {
-        return defaultToTypeConverter.get(type);
+        defaultToTypeConverters.put(type, converter);
     }
 
     /**
-     * Returns the singleton-instance of the
-     * {@link com.avides.xpath.utils.XPathUnmarshaller XPathUnmarshaller}
+     * Unregisters a {@link Function Converter} for default-conversion for the
+     * given type
      *
-     * @return the singleton-instance of the
-     *         {@link com.avides.xpath.utils.XPathUnmarshaller
-     *         XPathUnmarshaller}
+     * @param type
+     *            the type the {@link Function Converter} is registered to
+     *            convert to
+     *
+     * @since 1.0.3.RELEASE
+     *
+     * @see #registerDefaultConverterInstanceToType(Class, Function)
+     */
+    public static void unregisterDefaultConverterInstanceToType(Class<?> type)
+    {
+        defaultToTypeConverters.remove(type);
+    }
+
+    /**
+     * Resets all {@link Function Converter}s for default-conversion to the
+     * default (clears all and puts the default ones)
+     *
+     * @since 1.0.3.RELEASE
+     *
+     * @see #registerDefaultConverterInstanceToType(Class, Function)
+     */
+    public static void resetDefaultConverterInstancesToType()
+    {
+        defaultToTypeConverters.clear();
+        defaultToTypeConverters.put(Integer.class, XPathUtils.getConverter(ToIntegerConverter.class));
+        defaultToTypeConverters.put(Long.class, XPathUtils.getConverter(ToLongConverter.class));
+        defaultToTypeConverters.put(Short.class, XPathUtils.getConverter(ToShortConverter.class));
+        defaultToTypeConverters.put(Double.class, XPathUtils.getConverter(ToDoubleConverter.class));
+        defaultToTypeConverters.put(Float.class, XPathUtils.getConverter(ToFloatConverter.class));
+        defaultToTypeConverters.put(Boolean.class, XPathUtils.getConverter(ToBooleanConverter.class));
+        defaultToTypeConverters.put(Character.class, XPathUtils.getConverter(ToCharacterConverter.class));
+        defaultToTypeConverters.put(int.class, XPathUtils.getConverter(ToIntegerConverter.class));
+        defaultToTypeConverters.put(long.class, XPathUtils.getConverter(ToLongConverter.class));
+        defaultToTypeConverters.put(short.class, XPathUtils.getConverter(ToShortConverter.class));
+        defaultToTypeConverters.put(double.class, XPathUtils.getConverter(ToDoubleConverter.class));
+        defaultToTypeConverters.put(float.class, XPathUtils.getConverter(ToFloatConverter.class));
+        defaultToTypeConverters.put(boolean.class, XPathUtils.getConverter(ToBooleanConverter.class));
+        defaultToTypeConverters.put(char.class, XPathUtils.getConverter(ToCharacterConverter.class));
+        defaultToTypeConverters.put(LocalDate.class, XPathUtils.getConverter(ToLocalDateConverter.class));
+        defaultToTypeConverters.put(LocalDateTime.class, XPathUtils.getConverter(ToLocalDateTimeConverter.class));
+        defaultToTypeConverters.put(LocalTime.class, XPathUtils.getConverter(ToLocalTimeConverter.class));
+        defaultToTypeConverters.put(ZonedDateTime.class, XPathUtils.getConverter(ToZonedDateTimeConverter.class));
+    }
+
+    /**
+     * Returns the singleton-instance of the {@link XPathUnmarshaller}
+     *
+     * @return the singleton-instance of the {@link XPathUnmarshaller}
+     *
+     * @since 1.0.0.RELEASE
      */
     public static XPathUnmarshaller getInstance()
     {

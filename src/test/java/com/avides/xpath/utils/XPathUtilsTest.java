@@ -3,6 +3,7 @@ package com.avides.xpath.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
@@ -14,8 +15,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.avides.xpath.utils.converter.NoneConverter;
-import com.avides.xpath.utils.converter.ToIntegerConverter;
+import com.avides.xpath.utils.converters.NoneConverter;
+import com.avides.xpath.utils.converters.ToIntegerConverter;
 import com.avides.xpath.utils.testsupport.XPathTestSupport;
 
 import nu.xom.Element;
@@ -62,52 +63,35 @@ public class XPathUtilsTest extends XPathTestSupport
     public void testFromXml() throws ParsingException
     {
         AnyObject anyObject = XPathUtils.fromXml(xml, AnyObject.class);
-
-        assertThat(anyObject.getAnyString()).isEqualTo("anyStringValue");
-        assertThat(anyObject.getAnyInteger()).isEqualTo(123);
-        assertThat(anyObject.getAnyInt()).isEqualTo(123);
-        assertThat(anyObject.getNotExistingString()).isNull();
-        assertThat(anyObject.getNotExistingInteger()).isNull();
-        assertThat(anyObject.getNotExistingInt()).isZero();
-        assertThat(anyObject.getAnyStringMap()).hasSize(4)
-            .containsEntry("anyKey1", "234")
-            .containsEntry("anyKey2", "345")
-            .containsEntry("anyKey3", null)
-            .containsEntry("anyKey4", "456");
-        assertThat(anyObject.getAnyIntegerMap()).hasSize(4)
-            .containsEntry("anyKey1", Integer.valueOf(234))
-            .containsEntry("anyKey2", Integer.valueOf(345))
-            .containsEntry("anyKey3", null)
-            .containsEntry("anyKey4", Integer.valueOf(456));
-        assertThat(anyObject.getAnyStringList()).containsExactly("567", "678", "789");
-        assertThat(anyObject.getAnyIntegerList()).containsExactly(Integer.valueOf(567), Integer.valueOf(678), Integer.valueOf(789));
-        assertThat(anyObject.getAnyEnum()).isSameAs(AnyEnum.ENUM_VALUE2);
+        assertAnyObjectIsCorrect(anyObject);
     }
 
     @Test
     public void testFromRoot() throws ParsingException
     {
         AnyObject anyObject = XPathUtils.fromRoot(root, AnyObject.class);
+        assertAnyObjectIsCorrect(anyObject);
+    }
 
-        assertThat(anyObject.getAnyString()).isEqualTo("anyStringValue");
-        assertThat(anyObject.getAnyInteger()).isEqualTo(123);
-        assertThat(anyObject.getAnyInt()).isEqualTo(123);
-        assertThat(anyObject.getNotExistingString()).isNull();
-        assertThat(anyObject.getNotExistingInteger()).isNull();
-        assertThat(anyObject.getNotExistingInt()).isZero();
-        assertThat(anyObject.getAnyStringMap()).hasSize(4)
-            .containsEntry("anyKey1", "234")
-            .containsEntry("anyKey2", "345")
-            .containsEntry("anyKey3", null)
-            .containsEntry("anyKey4", "456");
-        assertThat(anyObject.getAnyIntegerMap()).hasSize(4)
-            .containsEntry("anyKey1", Integer.valueOf(234))
-            .containsEntry("anyKey2", Integer.valueOf(345))
-            .containsEntry("anyKey3", null)
-            .containsEntry("anyKey4", Integer.valueOf(456));
-        assertThat(anyObject.getAnyStringList()).containsExactly("567", "678", "789");
-        assertThat(anyObject.getAnyIntegerList()).containsExactly(Integer.valueOf(567), Integer.valueOf(678), Integer.valueOf(789));
-        assertThat(anyObject.getAnyEnum()).isSameAs(AnyEnum.ENUM_VALUE2);
+    @Test
+    public void testFromInputStream() throws ParsingException, IOException
+    {
+        AnyObject anyObject = XPathUtils.fromInputStream(getClass().getClassLoader().getResource("test.xml").openStream(), AnyObject.class);
+        assertAnyObjectIsCorrect(anyObject);
+    }
+
+    @Test
+    public void testFromReader() throws ParsingException, IOException
+    {
+        AnyObject anyObject = XPathUtils.fromReader(new StringReader(xml), AnyObject.class);
+        assertAnyObjectIsCorrect(anyObject);
+    }
+
+    @Test
+    public void testFromFile() throws ParsingException
+    {
+        AnyObject anyObject = XPathUtils.fromFile(new File(getClass().getClassLoader().getResource("test.xml").getFile()), AnyObject.class);
+        assertAnyObjectIsCorrect(anyObject);
     }
 
     @Test(expected = ParsingException.class)

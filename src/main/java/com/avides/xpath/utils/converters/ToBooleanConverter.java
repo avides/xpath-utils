@@ -1,4 +1,4 @@
-package com.avides.xpath.utils.converter;
+package com.avides.xpath.utils.converters;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -11,7 +11,7 @@ xpath-utils
 <dependency>
     <groupId>com.avides.xpath</groupId>
     <artifactId>xpath-utils</artifactId>
-    <version>1.0.2.RELEASE</version>
+    <version>1.0.3.RELEASE</version>
 </dependency>
 ```
 #### Available methods
@@ -37,13 +37,22 @@ XPathUtils.queryInt(Node root, String xPath);
 XPathUtils.queryInteger(Node root, String xPath);
 XPathUtils.queryList(Node root, String xPath);
 XPathUtils.queryList(Node root, String xPath, Class<? extends Function<String, T>> converterClass);
+XPathUtils.queryList(Node root, String xPath, Class<? extends Function<String, T>> converterClass, Class<T> subType);
+XPathUtils.queryTypedList(Node root, String xPath, Class<T> subType);
 XPathUtils.queryLocalDate(Node root, String xPath);
 XPathUtils.queryLocalDateTime(Node root, String xPath);
 XPathUtils.queryLocalTime(Node root, String xPath);
 XPathUtils.queryLong(Node root, String xPath);
 XPathUtils.queryMap(Node root, String, String, String);
 XPathUtils.queryMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<? extends Function<String, K>> keyConverterClass, Class<? extends Function<String, V>> valueConverterClass);
+XPathUtils.queryMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<? extends Function<String, K>> keyConverterClass, Class<? extends Function<String, V>> valueConverterClass, Class<K> keySubType, Class<V> valueSubType)
+XPathUtils.queryTypedMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<K> keySubType, Class<V> valueSubType)
+XPathUtils.queryKeyTypedMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<K> keySubType, Class<? extends Function<String, V>> valueConverterClass)
+XPathUtils.queryKeyTypedMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<K> keySubType)
+XPathUtils.queryValueTypedMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<? extends Function<String, K>> keyConverterClass, Class<V> valueSubType)
+XPathUtils.queryValueTypedMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<V> valueSubType)
 XPathUtils.queryNodeList(Node root, String xPath);
+XPathUtils.queryNodeMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath)
 XPathUtils.queryNodes(Node root, String xPath);
 XPathUtils.queryPrimitiveBoolean(Node root, String xPath);
 XPathUtils.queryPrimitiveCharacter(Node root, String xPath);
@@ -68,7 +77,12 @@ XPathUtils.fromFile(File file, Class<T> type);
 XPathUtils.fromXml(String xml, Class<T> type);
 
 XPathUtils.registerConverterInstance(Function<String, T> converter);
+XPathUtils.unregisterConverterInstance(Class<? extends Function<String, ?>> converterClass)
+XPathUtils.clearConverterInstances()
+
 XPathUtils.registerDefaultConverterInstanceToType(Class<?> type, Function<String, ?> converter)
+XPathUtils.unregisterDefaultConverterInstanceToType(Class<?> type)
+XPathUtils.resetDefaultConverterInstancesToType()
 ```
 #### Examples
 ```xml

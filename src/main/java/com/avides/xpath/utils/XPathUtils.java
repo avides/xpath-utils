@@ -17,21 +17,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.avides.xpath.utils.converter.ToBooleanConverter;
-import com.avides.xpath.utils.converter.ToCharacterConverter;
-import com.avides.xpath.utils.converter.ToDoubleConverter;
-import com.avides.xpath.utils.converter.ToFloatConverter;
-import com.avides.xpath.utils.converter.ToIntegerConverter;
-import com.avides.xpath.utils.converter.ToLocalDateConverter;
-import com.avides.xpath.utils.converter.ToLocalDateTimeConverter;
-import com.avides.xpath.utils.converter.ToLocalTimeConverter;
-import com.avides.xpath.utils.converter.ToLongConverter;
-import com.avides.xpath.utils.converter.ToShortConverter;
-import com.avides.xpath.utils.converter.ToZonedDateTimeConverter;
+import com.avides.xpath.utils.converters.NoneConverter;
+import com.avides.xpath.utils.converters.ToBooleanConverter;
+import com.avides.xpath.utils.converters.ToCharacterConverter;
+import com.avides.xpath.utils.converters.ToDoubleConverter;
+import com.avides.xpath.utils.converters.ToFloatConverter;
+import com.avides.xpath.utils.converters.ToIntegerConverter;
+import com.avides.xpath.utils.converters.ToLocalDateConverter;
+import com.avides.xpath.utils.converters.ToLocalDateTimeConverter;
+import com.avides.xpath.utils.converters.ToLocalTimeConverter;
+import com.avides.xpath.utils.converters.ToLongConverter;
+import com.avides.xpath.utils.converters.ToShortConverter;
+import com.avides.xpath.utils.converters.ToZonedDateTimeConverter;
 
 import nu.xom.Builder;
 import nu.xom.Document;
@@ -44,13 +46,12 @@ import nu.xom.ValidityException;
 /**
  * Utility-class for simple access to xml-nodes via xPath-queries containing
  * simple converting to java-types and others, including
- * {@link com.avides.xpath.utils.XPathUnmarshaller unmarshalling} to complete
- * objects via annotations
+ * {@link XPathUnmarshaller unmarshalling} to complete objects via annotations
  *
  * @author Martin Schumacher
  * @since 1.0.0.RELEASE
  *
- * @see {@link com.avides.xpath.utils.XPathUnmarshaller}
+ * @see XPathUnmarshaller
  */
 public abstract class XPathUtils
 {
@@ -64,16 +65,16 @@ public abstract class XPathUtils
     }
 
     /**
-     * Builds an {nu.xom.Element Element} of the given
-     * {@link java.io.InputStream InputStream} on which further xPath-operations
-     * can be executed
+     * Builds an {@link Element} of the given {@link InputStream} on which
+     * further xPath-operations can be executed
      *
      * @param inputStream
-     *            the {@link java.io.InputStream InputStream} to build the
-     *            {@link nu.xom.Element Element} from
-     * @return the resulting {@link nu.xom.Element Element}
+     *            the {@link InputStream} to build the {@link Element} from
+     * @return the resulting {@link Element}
      * @throws ParsingException
-     *             if the {nu.xom.Element Element} can not be build
+     *             if the {@link Element} can not be build
+     *
+     * @since 1.0.2.RELEASE
      */
     public static Element getRootElement(InputStream inputStream) throws ParsingException
     {
@@ -81,15 +82,16 @@ public abstract class XPathUtils
     }
 
     /**
-     * Builds an {nu.xom.Element Element} of the given {@link java.io.Reader
-     * Reader} on which further xPath-operations can be executed
+     * Builds an {@link Element} of the given {@link Reader} on which further
+     * xPath-operations can be executed
      *
      * @param reader
-     *            the {@link java.io.Reader Reader} to build the
-     *            {@link nu.xom.Element Element} from
-     * @return the resulting {@link nu.xom.Element Element}
+     *            the {@link Reader} to build the {@link Element} from
+     * @return the resulting {@link Element}
      * @throws ParsingException
-     *             if the {nu.xom.Element Element} can not be build
+     *             if the {@link Element} can not be build
+     *
+     * @since 1.0.2.RELEASE
      */
     public static Element getRootElement(Reader reader) throws ParsingException
     {
@@ -97,15 +99,16 @@ public abstract class XPathUtils
     }
 
     /**
-     * Builds an {nu.xom.Element Element} of the given {@link java.io.File File}
-     * on which further xPath-operations can be executed
+     * Builds an {@link Element} of the given {@link File} on which further
+     * xPath-operations can be executed
      *
      * @param file
-     *            the {@link java.io.File File} to build the
-     *            {@link nu.xom.Element Element} from
-     * @return the resulting {@link nu.xom.Element Element}
+     *            the {@link File} to build the {@link Element} from
+     * @return the resulting {@link Element}
      * @throws ParsingException
-     *             if the {nu.xom.Element Element} can not be build
+     *             if the {@link Element} can not be build
+     *
+     * @since 1.0.2.RELEASE
      */
     public static Element getRootElement(File file) throws ParsingException
     {
@@ -113,15 +116,16 @@ public abstract class XPathUtils
     }
 
     /**
-     * Parses the given xml to an {nu.xom.Element Element} on which further
+     * Parses the given xml to an {@link Element} on which further
      * xPath-operations can be executed
      *
      * @param xml
-     *            the xml to parse to an {@link nu.xom.Element Element}
-     * @return the resulting {@link nu.xom.Element Element} (root-element of the
-     *         given xml)
+     *            the xml to parse to an {@link Element}
+     * @return the resulting {@link Element} (root-element of the given xml)
      * @throws ParsingException
      *             if the xml can not be parsed (invalid xml)
+     *
+     * @since 1.0.0.RELEASE
      */
     public static Element getRootElement(String xml) throws ParsingException
     {
@@ -129,24 +133,26 @@ public abstract class XPathUtils
     }
 
     /**
-     * Unmarshals the given {@link nu.xom.Element Element} to a new instance of
-     * the given {@link java.lang.Class Class}, using annotations
+     * Unmarshals the given {@link Element} to a new instance of the given
+     * {@link Class}, using annotations
      * {@link com.avides.xpath.utils.annotations.XPathFirst XPathFirst},
      * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
      * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
      *
      * @param <T>
      *            the type of the resulting new instance, determined by the
-     *            given {@link java.lang.Class Class}
+     *            given {@link Class}
      * @param root
-     *            the {@link nu xom.Element Element} unmarshal from
+     *            the {@link Element} unmarshal from
      * @param type
-     *            the {@link java.lang.Class Class} of the wanted new instance
-     * @return a new instance of the given {@link java.lang.Class Class},
-     *         unmarshalled from the given xml
+     *            the {@link Class} of the wanted new instance
+     * @return a new instance of the given {@link Class}, unmarshalled from the
+     *         given xml
      *
-     * @see {@link com.avides.xpath.utils.XPathUnmarshaller#unmarshal(Element, Class)}
-     * @see {@link com.avides.xpath.utils.XPathUtils#fromXml(String, Class)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see XPathUnmarshaller#unmarshal(Element, Class)
+     * @see #fromXml(String, Class)
      */
     public static <T> T fromRoot(Element root, Class<T> type)
     {
@@ -154,25 +160,25 @@ public abstract class XPathUtils
     }
 
     /**
-     * Unmarshals the given {@link java.io.InputStream InputStream} to a new
-     * instance of the given {@link java.lang.Class Class}, using annotations
+     * Unmarshals the given {@link InputStream} to a new instance of the given
+     * {@link Class}, using annotations
      * {@link com.avides.xpath.utils.annotations.XPathFirst XPathFirst},
      * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
      * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
      *
      * @param inputStream
-     *            the {@link java.io.InputStream InputStream} to be unmarshalled
+     *            the {@link InputStream} to be unmarshalled
      * @param type
-     *            the {@link java.lang.Class Class} of the wanted new instance
-     * @return a new instance of the given {@link java.lang.Class Class},
-     *         unmarshalled from the given {@link java.io.InputStream
-     *         InputStream}
+     *            the {@link Class} of the wanted new instance
+     * @return a new instance of the given {@link Class}, unmarshalled from the
+     *         given {@link InputStream}
      * @throws ParsingException
-     *             if the {@link java.io.InputStream InputStream} can not be
-     *             parsed (invalid xml)
+     *             if the {@link InputStream} can not be parsed (invalid xml)
      *
-     * @see {@link com.avides.xpath.utils.XPathUnmarshaller#unmarshal(String, Class)}
-     * @see {@link com.avides.xpath.utils.XPathUtils#fromRoot(Element, Class)}
+     * @since 1.0.2.RELEASE
+     *
+     * @see XPathUnmarshaller#unmarshal(String, Class)
+     * @see #fromRoot(Element, Class)
      */
     public static <T> T fromInputStream(InputStream inputStream, Class<T> type) throws ParsingException
     {
@@ -180,24 +186,25 @@ public abstract class XPathUtils
     }
 
     /**
-     * Unmarshals the given {@link java.io.Reader Reader} to a new instance of
-     * the given {@link java.lang.Class Class}, using annotations
+     * Unmarshals the given {@link Reader} to a new instance of the given
+     * {@link Class}, using annotations
      * {@link com.avides.xpath.utils.annotations.XPathFirst XPathFirst},
      * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
      * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
      *
      * @param reader
-     *            the {@link java.io.Reader Reader} to be unmarshalled
+     *            the {@link Reader} to be unmarshalled
      * @param type
-     *            the {@link java.lang.Class Class} of the wanted new instance
-     * @return a new instance of the given {@link java.lang.Class Class},
-     *         unmarshalled from the given {@link java.io.Reader Reader}
+     *            the {@link Class} of the wanted new instance
+     * @return a new instance of the given {@link Class}, unmarshalled from the
+     *         given {@link Reader}
      * @throws ParsingException
-     *             if the {@link java.io.Reader Reader} can not be parsed
-     *             (invalid xml)
+     *             if the {@link Reader} can not be parsed (invalid xml)
      *
-     * @see {@link com.avides.xpath.utils.XPathUnmarshaller#unmarshal(String, Class)}
-     * @see {@link com.avides.xpath.utils.XPathUtils#fromRoot(Element, Class)}
+     * @since 1.0.2.RELEASE
+     *
+     * @see XPathUnmarshaller#unmarshal(String, Class)
+     * @see #fromRoot(Element, Class)
      */
     public static <T> T fromReader(Reader reader, Class<T> type) throws ParsingException
     {
@@ -205,24 +212,25 @@ public abstract class XPathUtils
     }
 
     /**
-     * Unmarshals the given {@link java.io.File File} to a new instance of the
-     * given {@link java.lang.Class Class}, using annotations
+     * Unmarshals the given {@link File} to a new instance of the given
+     * {@link Class}, using annotations
      * {@link com.avides.xpath.utils.annotations.XPathFirst XPathFirst},
      * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
      * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
      *
      * @param file
-     *            the {@link java.io.File File} to be unmarshalled
+     *            the {@link File} to be unmarshalled
      * @param type
-     *            the {@link java.lang.Class Class} of the wanted new instance
-     * @return a new instance of the given {@link java.lang.Class Class},
-     *         unmarshalled from the given {@link java.io.Reader Reader}
+     *            the {@link Class} of the wanted new instance
+     * @return a new instance of the given {@link Class}, unmarshalled from the
+     *         given {@link Reader}
      * @throws ParsingException
-     *             if the {@link java.io.File File} can not be parsed (invalid
-     *             xml)
+     *             if the {@link File} can not be parsed (invalid xml)
      *
-     * @see {@link com.avides.xpath.utils.XPathUnmarshaller#unmarshal(String, Class)}
-     * @see {@link com.avides.xpath.utils.XPathUtils#fromRoot(Element, Class)}
+     * @since 1.0.2.RELEASE
+     *
+     * @see XPathUnmarshaller#unmarshal(String, Class)
+     * @see #fromRoot(Element, Class)
      */
     public static <T> T fromFile(File file, Class<T> type) throws ParsingException
     {
@@ -230,23 +238,25 @@ public abstract class XPathUtils
     }
 
     /**
-     * Unmarshals the given xml to a new instance of the given
-     * {@link java.lang.Class Class}, using annotations
-     * {@link com.avides.xpath.utils.annotations.XPathFirst XPathFirst},
-     * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
-     * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
+     * Unmarshals the given xml to a new instance of the given {@link Class},
+     * using annotations {@link com.avides.xpath.utils.annotations.XPathFirst
+     * XPathFirst}, {@link com.avides.xpath.utils.annotations.XPathList
+     * XPathList} and {@link com.avides.xpath.utils.annotations.XPathMap
+     * XPathMap}
      *
      * @param xml
      *            the xml to be unmarshalled
      * @param type
-     *            the {@link java.lang.Class Class} of the wanted new instance
-     * @return a new instance of the given {@link java.lang.Class Class},
-     *         unmarshalled from the given xml
+     *            the {@link Class} of the wanted new instance
+     * @return a new instance of the given {@link Class}, unmarshalled from the
+     *         given xml
      * @throws ParsingException
      *             if the xml can not be parsed (invalid xml)
      *
-     * @see {@link com.avides.xpath.utils.XPathUnmarshaller#unmarshal(String, Class)}
-     * @see {@link com.avides.xpath.utils.XPathUtils#fromRoot(Element, Class)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see XPathUnmarshaller#unmarshal(String, Class)
+     * @see #fromRoot(Element, Class)
      */
     public static <T> T fromXml(String xml, Class<T> type) throws ParsingException
     {
@@ -254,17 +264,17 @@ public abstract class XPathUtils
     }
 
     /**
-     * Alias for {@link nu.xom.Node#query(String)}
+     * Alias for {@link Node#query(String)}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            on
+     *            the {@link Node} to execute the given xPath-query on
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found {@link nu.xom.Nodes Nodes}
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found {@link Nodes}
      *
-     * @see {@link nu.xom.Node#query(String)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see Node#query(String)
      */
     public static Nodes queryNodes(Node root, String xPath)
     {
@@ -272,21 +282,19 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * returns the found {@link nu.xom.Nodes Nodes} converted to an
-     * {@link java.lang.Iterable Iterable} of {@link nu.xom.Node Node}
+     * Executes the given xPath-query on the given {@link Node} and returns the
+     * found {@link Nodes} converted to an {@link Iterable} of {@link Node}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found {@link nu.xom.Nodes Nodes} converted to a
-     *         {@link java.lang.Iterable Iterable} of {@link nu.xom.Node Node},
-     *         will never be <code>null</code>
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found {@link Nodes} converted to a {@link Iterable} of
+     *         {@link Node}, will never be <code>null</code>
      *
-     * @see {@link com.avides.xpath.utils.NodeIterator}
+     * @since 1.0.0.RELEASE
+     *
+     * @see NodeIterator
      */
     public static Iterable<Node> each(Node root, String xPath)
     {
@@ -294,19 +302,17 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * returns the found {@link nu.xom.Nodes Nodes} converted to a
-     * {@link java.util.List List} of {@link nu.xom.Node Node}
+     * Executes the given xPath-query on the given {@link Node} and returns the
+     * found {@link Nodes} converted to a {@link List} of {@link Node}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found {@link nu.xom.Nodes Nodes} converted to a
-     *         {@link java.util.List List} of {@link nu.xom.Node Node}, will
-     *         never be <code>null</code>
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found {@link Nodes} converted to a {@link List} of
+     *         {@link Node}, will never be <code>null</code>
+     *
+     * @since 1.0.0.RELEASE
      */
     public static List<Node> queryNodeList(Node root, String xPath)
     {
@@ -319,21 +325,19 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * returns the found {@link nu.xom.Nodes Nodes} converted to a
-     * {@link java.util.List List} of {@link nu.xom.Element Element}
+     * Executes the given xPath-query on the given {@link Node} and returns the
+     * found {@link Nodes} converted to a {@link List} of {@link Element}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found {@link nu.xom.Nodes Nodes} converted to a
-     *         {@link java.util.List List} of {@link nu.xom.Element Element},
-     *         will never be <code>null</code>
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found {@link Nodes} converted to a {@link List} of
+     *         {@link Element}, will never be <code>null</code>
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryNodeList(Node, String)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryNodeList(Node, String)
      */
     public static List<Element> queryElementList(Node root, String xPath)
     {
@@ -346,18 +350,18 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * returns the first found {@link nu.xom.Node Node} or <code>null</code> if
-     * no {@link nu.xom.Nodes Nodes} were found
+     * Executes the given xPath-query on the given {@link Node} and returns the
+     * first found {@link Node} or <code>null</code> if no {@link Nodes} were
+     * found
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the first found {@link nu.xom.Node Node}, <code>null</code> if no
-     *         {@link nu.xom.Nodes Nodes} were found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the first found {@link Node}, <code>null</code> if no
+     *         {@link Nodes} were found
+     *
+     * @since 1.0.0.RELEASE
      */
     public static Node queryFirstNode(Node root, String xPath)
     {
@@ -366,21 +370,19 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * returns the found {@link nu.xom.Node Node} casted to an
-     * {@link nu.xom.Element}
+     * Executes the given xPath-query on the given {@link Node} and returns the
+     * found {@link Node} casted to an {@link Element}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found {@link nu.xom.Node Node} casted to an
-     *         {@link nu.xom.Element}, <code>null</code> if no
-     *         {@link nu.xom.Node Node} was found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found {@link Node} casted to an {@link Element},
+     *         <code>null</code> if no {@link Node} was found
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirstNode(Node, String)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirstNode(Node, String)
      */
     public static Element queryFirstElement(Node root, String xPath)
     {
@@ -388,18 +390,18 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * returns the first found value or <code>null</code> if no value was found
+     * Executes the given xPath-query on the given {@link Node} and returns the
+     * first found value or <code>null</code> if no value was found
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the first found value, <code>null</code> if no value was found
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirstNode(Node, String)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirstNode(Node, String)
      */
     public static String queryFirst(Node root, String xPath)
     {
@@ -408,23 +410,21 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * returns the first found value converted by the given
-     * {@link java.util.function.Function Converter} or <code>null</code> if no
-     * value was found
+     * Executes the given xPath-query on the given {@link Node} and returns the
+     * first found value converted by the given {@link Function Converter} or
+     * <code>null</code> if no value was found
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @param converterClass
-     *            the {@link java.util.function.Function Converter} (given by
-     *            the {@link java.lang.Class}) to convert the value with
-     * @return the first found value converted by the given
-     *         {@link java.util.function.Function Converter}, <code>null</code>
-     *         if no value was found
+     *            the {@link Function Converter} (given by the {@link Class}) to
+     *            convert the value with
+     * @return the first found value converted by the given {@link Function
+     *         Converter}, <code>null</code> if no value was found
+     *
+     * @since 1.0.0.RELEASE
      */
     public static <T> T queryFirst(Node root, String xPath, Class<? extends Function<String, T>> converterClass)
     {
@@ -432,16 +432,16 @@ public abstract class XPathUtils
     }
 
     /**
-     * Tests, if the given xPath-query on the given {@link nu.xom.Node Node}
-     * results to an existing {@link nu.xom.Node Node}
+     * Tests, if the given xPath-query on the given {@link Node} results to an
+     * existing {@link Node}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return true if a {@link nu.xom.Node Node} exists, false if not
+     *            the xPath-query to execute on the given {@link Node}
+     * @return true if a {@link Node} exists, false if not
+     *
+     * @since 1.0.0.RELEASE
      */
     public static boolean hasNode(Node root, String xPath)
     {
@@ -449,24 +449,22 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to an {@link java.lang.Integer Integer}. Values
-     * are trimmed before conversion
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to an {@link Integer}. Values are trimmed before conversion
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to an {@link java.lang.Integer
-     *         Integer}, <code>null</code> if no value was found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to an {@link Integer},
+     *         <code>null</code> if no value was found
      * @throws NumberFormatException
-     *             if the value can not be converted to a
-     *             {@link java.lang.Integer Integer}
+     *             if the value can not be converted to a {@link Integer}
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToIntegerConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToIntegerConverter
      */
     public static Integer queryInteger(Node root, String xPath)
     {
@@ -474,23 +472,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a primitive integer (<code>int</code>).
-     * Values are trimmed before conversion
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a primitive integer (<code>int</code>). Values are trimmed
+     * before conversion
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive integer
      *         (<code>int</code>), zero if no value was found
      * @throws NumberFormatException
      *             if the value can not be converted to a <code>int</code>
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToIntegerConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToIntegerConverter
      */
     public static int queryPrimitiveInteger(Node root, String xPath)
     {
@@ -499,21 +497,20 @@ public abstract class XPathUtils
     }
 
     /**
-     * Alias for
-     * {@link com.avides.xpath.utils.XPathUtils#queryPrimitiveInteger(Node, String)}
+     * Alias for {@link #queryPrimitiveInteger(Node, String)}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive integer
      *         (<code>int</code>), zero if no value was found
      * @throws NumberFormatException
      *             if the value can not be converted to a <code>int</code>
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryPrimitiveInteger(Node, String)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryPrimitiveInteger(Node, String)
      */
     public static int queryInt(Node root, String xPath)
     {
@@ -521,24 +518,22 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a {@link java.lang.Long Long}. Values are
-     * trimmed before conversion
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a {@link Long}. Values are trimmed before conversion
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.lang.Long Long},
-     *         <code>null</code> if no value was found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link Long}, <code>null</code> if
+     *         no value was found
      * @throws NumberFormatException
-     *             if the value can not be converted to a {@link java.lang.Long
-     *             Long}
+     *             if the value can not be converted to a {@link Long}
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToLongConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToLongConverter
      */
     public static Long queryLong(Node root, String xPath)
     {
@@ -546,23 +541,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a primitive <code>long</code>. Values are
-     * trimmed before conversion
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a primitive <code>long</code>. Values are trimmed before
+     * conversion
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive <code>long</code>, zero
      *         if no value was found
      * @throws NumberFormatException
      *             if the value can not be converted to a <code>long</code>
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToLongConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToLongConverter
      */
     public static long queryPrimitiveLong(Node root, String xPath)
     {
@@ -571,24 +566,22 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a {@link java.lang.Short Short}. Values are
-     * trimmed before conversion
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a {@link Short}. Values are trimmed before conversion
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.lang.Short Short},
-     *         <code>null</code> if no value was found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link Short}, <code>null</code>
+     *         if no value was found
      * @throws NumberFormatException
-     *             if the value can not be converted to a {@link java.lang.Short
-     *             Short}
+     *             if the value can not be converted to a {@link Short}
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToShortConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToShortConverter
      */
     public static Short queryShort(Node root, String xPath)
     {
@@ -596,23 +589,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a primitive <code>short</code>. Values are
-     * trimmed before conversion
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a primitive <code>short</code>. Values are trimmed before
+     * conversion
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive <code>short</code>, zero
      *         if no value was found
      * @throws NumberFormatException
      *             if the value can not be converted to a <code>short</code>
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToShortConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToShortConverter
      */
     public static short queryPrimitiveShort(Node root, String xPath)
     {
@@ -621,24 +614,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a {@link java.lang.Double Double}. Values are
-     * trimmed before conversion, commas are replaced by dots
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a {@link Double}. Values are trimmed before conversion,
+     * commas are replaced by dots
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.lang.Double Double},
-     *         <code>null</code> if no value was found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link Double}, <code>null</code>
+     *         if no value was found
      * @throws NumberFormatException
-     *             if the value can not be converted to a
-     *             {@link java.lang.Double Double}
+     *             if the value can not be converted to a {@link Double}
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToDoubleConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToDoubleConverter
      */
     public static Double queryDouble(Node root, String xPath)
     {
@@ -646,23 +638,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a primitive <code>double</code>. Values are
-     * trimmed before conversion, commas are replaced by dots
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a primitive <code>double</code>. Values are trimmed before
+     * conversion, commas are replaced by dots
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive <code>double</code>,
      *         zero if no value was found
      * @throws NumberFormatException
      *             if the value can not be converted to a <code>double</code>
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToDoubleConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToDoubleConverter
      */
     public static double queryPrimitiveDouble(Node root, String xPath)
     {
@@ -671,24 +663,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a {@link java.lang.Float Float}. Values are
-     * trimmed before conversion, commas are replaced by dots
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a {@link Float}. Values are trimmed before conversion,
+     * commas are replaced by dots
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.lang.Float Float},
-     *         <code>null</code> if no value was found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link Float}, <code>null</code>
+     *         if no value was found
      * @throws NumberFormatException
-     *             if the value can not be converted to a {@link java.lang.Float
-     *             Float}
+     *             if the value can not be converted to a {@link Float}
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToFloatConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToFloatConverter
      */
     public static Float queryFloat(Node root, String xPath)
     {
@@ -696,23 +687,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a primitive <code>float</code>. Values are
-     * trimmed before conversion, commas are replaced by dots
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a primitive <code>float</code>. Values are trimmed before
+     * conversion, commas are replaced by dots
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive <code>float</code>, zero
      *         if no value was found
      * @throws NumberFormatException
      *             if the value can not be converted to a <code>float</code>
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToFloatConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToFloatConverter
      */
     public static float queryPrimitiveFloat(Node root, String xPath)
     {
@@ -721,23 +712,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a {@link java.lang.Boolean Boolean}. Allowed
-     * values for {@link java.lang.Boolean#TRUE TRUE} are (not case-sensitive):
-     * 'true', 'yes', 'on', '1', 'positive', 'correct', 'ja', 'oui', 'si', 'sì'.
-     * All other values will result to {@link java.lang.Boolean#FALSE FALSE}
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a {@link Boolean}. Allowed values for {@link Boolean#TRUE
+     * TRUE} are (not case-sensitive): 'true', 'yes', 'on', '1', 'positive',
+     * 'correct', 'ja', 'oui', 'si', 'sì'. All other values will result to
+     * {@link Boolean#FALSE FALSE}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.lang.Boolean Boolean},
-     *         <code>null</code> if no value was found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link Boolean}, <code>null</code>
+     *         if no value was found
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToBooleanConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToBooleanConverter
      */
     public static Boolean queryBoolean(Node root, String xPath)
     {
@@ -745,23 +736,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a primitive <code>boolean</code>. Allowed
-     * values for <code>boolean true</code> are (not case-sensitive): 'true',
-     * 'yes', 'on', '1', 'positive', 'correct', 'ja', 'oui', 'si', 'sì'. All
-     * other values will result to <code>boolean false</code>
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a primitive <code>boolean</code>. Allowed values for
+     * <code>boolean true</code> are (not case-sensitive): 'true', 'yes', 'on',
+     * '1', 'positive', 'correct', 'ja', 'oui', 'si', 'sì'. All other values
+     * will result to <code>boolean false</code>
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive <code>boolean</code>,
      *         <code>boolean false</code> if no value was found
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToBooleanConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToBooleanConverter
      */
     public static boolean queryPrimitiveBoolean(Node root, String xPath)
     {
@@ -770,19 +761,18 @@ public abstract class XPathUtils
     }
 
     /**
-     * Alias for
-     * {@link com.avides.xpath.utils.XPathUtils#queryPrimitiveBoolean(Node, String)}
+     * Alias for {@link #queryPrimitiveBoolean(Node, String)}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive <code>boolean</code>,
      *         <code>boolean false</codes> if no value was found
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryPrimitiveBoolean(Node, String)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryPrimitiveBoolean(Node, String)
      */
     public static boolean queryBool(Node root, String xPath)
     {
@@ -790,24 +780,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a {@link java.lang.Character Character}. If
-     * the found value is longer than 1 character, the first character will be
-     * returned. If no value was found or the found value is empty,
-     * <code>null</code> will be returned.
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a {@link Character}. If the found value is longer than 1
+     * character, the first character will be returned. If no value was found or
+     * the found value is empty, <code>null</code> will be returned.
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.lang.Character
-     *         Character}, <code>null</code> if no value was found or the found
-     *         value is empty
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link Character},
+     *         <code>null</code> if no value was found or the found value is
+     *         empty
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToCharacterConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToCharacterConverter
      */
     public static Character queryCharacter(Node root, String xPath)
     {
@@ -815,24 +804,24 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a primitive character (<code>char</code>). If
-     * the found value is longer than 1 character, the first character will be
-     * returned. If no value was found or the found value is empty, a
-     * zero-valued characater will be returned.
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a primitive character (<code>char</code>). If the found
+     * value is longer than 1 character, the first character will be returned.
+     * If no value was found or the found value is empty, a zero-valued
+     * characater will be returned.
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive character
      *         (<code>char</code>), zero-valued character if no value was found
      *         or the found value is empty
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToCharacterConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToCharacterConverter
      */
     public static char queryPrimitiveCharacter(Node root, String xPath)
     {
@@ -841,20 +830,19 @@ public abstract class XPathUtils
     }
 
     /**
-     * Alias for
-     * {@link com.avides.xpath.utils.XPathUtils#queryPrimitiveCharacter(Node, String)}
+     * Alias for {@link #queryPrimitiveCharacter(Node, String)}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive character
      *         (<code>char</code>), zero-valued character if no value was found
      *         or the found value is empty
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryPrimitiveCharacter(Node, String)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryPrimitiveCharacter(Node, String)
      */
     public static char queryChar(Node root, String xPath)
     {
@@ -862,24 +850,24 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to the wanted {@link java.lang.Enum Enum}. If
-     * the value is empty, <code>null</code> will be returned
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to the wanted {@link Enum}. If the value is empty,
+     * <code>null</code> will be returned
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.lang.Enum Enum},
-     *         <code>null</code> if no value was found, is empty or could not be
-     *         converted to a {@link java.lang.Enum Enum}
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link Enum}, <code>null</code> if
+     *         no value was found, is empty or could not be converted to a
+     *         {@link Enum}
      *
      * @throws IllegalArgumentException
      *             if the enum-value can not be parsed
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
      */
     public static <E extends Enum<E>> E queryEnum(Node root, String xPath, Class<E> enumType)
     {
@@ -888,25 +876,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a {@link java.time.ZonedDateTime
-     * ZonedDateTime}. The value has to match the format
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a {@link ZonedDateTime}. The value has to match the format
      * {@link java.time.format.DateTimeFormatter#ISO_ZONED_DATE_TIME}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.time.ZonedDateTime
-     *         ZonedDateTime}, <code>null</code> if no value was found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link ZonedDateTime},
+     *         <code>null</code> if no value was found
      * @throws java.time.format.DateTimeParseException
-     *             if value can not be converted to
-     *             {@link java.time.ZonedDateTime ZonedDateTime}
+     *             if value can not be converted to {@link ZonedDateTime}
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToZonedDateTimeConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToZonedDateTimeConverter
      */
     public static ZonedDateTime queryZonedDateTime(Node root, String xPath)
     {
@@ -915,24 +901,22 @@ public abstract class XPathUtils
 
     /**
      * Executes the given xPath-query on the given node and converts the found
-     * value to a {@link java.time.LocalDateTime LocalDateTime}. The value has
-     * to match the format
+     * value to a {@link LocalDateTime}. The value has to match the format
      * {@link java.time.format.DateTimeFormatter#ISO_LOCAL_DATE_TIME}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.time.LocalDateTime
-     *         LocalDateTime}, <code>null</code> if no value was found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link LocalDateTime},
+     *         <code>null</code> if no value was found
      * @throws java.time.format.DateTimeParseException
-     *             if value can not be converted to
-     *             {@link java.time.LocalDateTime LocalDateTime}
+     *             if value can not be converted to {@link LocalDateTime}
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToLocalDateTimeConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToLocalDateTimeConverter
      */
     public static LocalDateTime queryLocalDateTime(Node root, String xPath)
     {
@@ -940,25 +924,23 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * converts the found value to a {@link java.time.LocalDate LocalDate}. The
-     * value has to match the format
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a {@link LocalDate}. The value has to match the format
      * {@link java.time.format.DateTimeFormatter#ISO_LOCAL_DATE}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.time.LocalDate
-     *         LocalDate}, <code>null</code> if no value was found
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link LocalDate},
+     *         <code>null</code> if no value was found
      * @throws java.time.format.DateTimeParseException
-     *             if value can not be converted to {@link java.time.LocalDate
-     *             LocalDate}
+     *             if value can not be converted to {@link LocalDate}
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToLocalDateConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToLocalDateConverter
      */
     public static LocalDate queryLocalDate(Node root, String xPath)
     {
@@ -966,25 +948,24 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given node and converts the found
-     * value to a {@link java.time.LocalTime LocalTime}. The value has to match
-     * the format {@link java.time.format.DateTimeFormatter#ISO_LOCAL_TIME}
+     * Executes the given xPath-query on the given {@link Node} and converts the
+     * found value to a {@link LocalTime}. The value has to match the format
+     * {@link java.time.format.DateTimeFormatter#ISO_LOCAL_TIME}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return the found value converted to a {@link java.time.LocalTime
-     *         LocalTime}, <code>null</code> if no value was found or could not
-     *         be converted to a {@link java.time.LocalTime LocalTime}
+     *            the xPath-query to execute on the given {@link Node}
+     * @return the found value converted to a {@link LocalTime},
+     *         <code>null</code> if no value was found or could not be converted
+     *         to a {@link LocalTime}
      * @throws java.time.format.DateTimeParseException
-     *             if value can not be converted to {@link java.time.LocalTime
-     *             LocalTime}
+     *             if value can not be converted to {@link LocalTime}
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryFirst(Node, String, Class)}
-     * @see {@link com.avides.xpath.utils.converter.ToLocalTimeConverter}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryFirst(Node, String, Class)
+     * @see ToLocalTimeConverter
      */
     public static LocalTime queryLocalTime(Node root, String xPath)
     {
@@ -992,17 +973,17 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * returns a {@link java.util.List List} of the found values
+     * Executes the given xPath-query on the given {@link Node} and returns a
+     * {@link List} of the found values
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
-     * @return a {@link java.util.List List} of the found values, will never be
+     *            the xPath-query to execute on the given {@link Node}
+     * @return a {@link List} of the found values, will never be
      *         <code>null</code>
+     *
+     * @since 1.0.0.RELEASE
      */
     public static List<String> queryList(Node root, String xPath)
     {
@@ -1012,51 +993,146 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the given xPath-query on the given {@link nu.xom.Node Node} and
-     * returns a {@link java.util.List List} of the found values converted by
-     * the given {@link java.util.function.Function Converter}
+     * Executes the given xPath-query on the given {@link Node} and returns a
+     * {@link List} of the found values converted by the given {@link Function
+     * Converter}
      *
      * @param <T>
      *            the type of the resulting list-items, determined by the given
-     *            {@link java.util.function.Function Converter}
+     *            {@link Function Converter}
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given xPath-query
-     *            from
+     *            the {@link Node} to execute the given xPath-query from
      * @param xPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node}
+     *            the xPath-query to execute on the given {@link Node}
      * @param converterClass
-     *            the {@link java.util.function.Function Converter} (given by
-     *            the {@link java.lang.Class}) to convert the values with
-     * @return a {@link java.util.List List} of the found values converted by
-     *         the given {@link java.util.function.Function Converter}, will
-     *         never be <code>null</code>
+     *            the {@link Function Converter} (given by the {@link Class}) to
+     *            convert the values with
+     * @return a {@link List} of the found values converted by the given
+     *         {@link Function Converter}, will never be <code>null</code>
+     *
+     * @since 1.0.0.RELEASE
      */
+    @SuppressWarnings("unchecked")
     public static <T> List<T> queryList(Node root, String xPath, Class<? extends Function<String, T>> converterClass)
     {
-        Function<String, T> converter = getConverter(converterClass);
-        return queryList(root, xPath).stream().map(item -> converter.apply(item)).collect(toList());
+        Stream<String> stringList = queryList(root, xPath).stream();
+        if (converterClass != null)
+        {
+            Function<String, T> converter = getConverter(converterClass);
+            return stringList.map(item -> converter.apply(item)).collect(toList());
+        }
+        else
+        {
+            return (List<T>) stringList.map(item -> null).collect(toList());
+        }
     }
 
     /**
-     * Executes the give entryXPath on the given {@link nu.xom.Node Node} to
-     * create an {@link java.util.Map.Entry Entry} for each found
-     * {@link nu.xom.Node Node}. From that found {@link nu.xom.Node Node} each
-     * entry-key is queried by the given keySubXPath and each entry-value is
-     * queried by the given valueSubXPath
+     * Executes the given xPath-query on the given {@link Node} and returns a
+     * {@link List} of the found values converted by the given {@link Function
+     * Converter}. If the {@link Class subType} is given, the {@link Function
+     * Converter} is ignored and the found {@link Node}s are unmarshalled to the
+     * given {@link Class subType}
+     *
+     * @param <T>
+     *            the type of the resulting list-items, determined by the given
+     *            {@link Function Converter}
+     * @param root
+     *            the {@link Node} to execute the given xPath-query from
+     * @param xPath
+     *            the xPath-query to execute on the given {@link Node}
+     * @param converterClass
+     *            the {@link Function Converter} (given by the {@link Class}) to
+     *            convert the values with
+     * @return a {@link List} of the found values converted by the given
+     *         {@link Function Converter}, or a {@link List} of the given
+     *         {@link Class subType}, if a {@link Class subType is given}. Will
+     *         never be <code>null</code>
+     *
+     * @since 1.0.3.RELEASE
+     */
+    public static <T> List<T> queryList(Node root, String xPath, Class<? extends Function<String, T>> converterClass, Class<T> subType)
+    {
+        if ((subType != null) && (subType != String.class))
+        {
+            List<Node> nodeList = XPathUtils.queryNodeList(root, xPath);
+            List<T> values = new ArrayList<>(nodeList.size());
+            for (Node node : nodeList)
+            {
+                values.add(XPathUtils.fromRoot((Element) node, subType));
+            }
+            return values;
+        }
+        else
+        {
+            return queryList(root, xPath, converterClass);
+        }
+    }
+
+    /**
+     * Alias / shortcut for {@link #queryList(Node, String, Class, Class)
+     *
+     * @since 1.0.3.RELEASE
+     */
+    public static <T> List<T> queryTypedList(Node root, String xPath, Class<T> subType)
+    {
+        return queryList(root, xPath, null, subType);
+    }
+
+    /**
+     * Executes the give entryXPath on the given {@link Node} to create an
+     * {@link Entry} for each found {@link Node}. From that found {@link Node}
+     * each entry-key is queried by the given keySubXPath and each entry-value
+     * is queried by the given valueSubXPath
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given
-     *            entryXPath-query from
+     *            the {@link Node} to execute the given entryXPath-query from
      * @param entryXPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node} for all entries
+     *            the xPath-query to execute on the given {@link Node} for all
+     *            entries
      * @param keySubXPath
      *            the xPath-query to execute on every found entry-node to get
-     *            the key of that {@link java.util.Map.Entry Entry}
+     *            the key of that {@link Entry}
      * @param valueSubXPath
      *            the xPath-query to execute on every found entry-node to get
-     *            the value of that {@link java.util.Map.Entry Entry}
+     *            the value of that {@link Entry}
+     * @return a {@link Map} of {@link Node keyNode} and {@link Node valueNode}
+     *
+     * @since 1.0.3.RELEASE
+     */
+    public static Map<Node, Node> queryNodeMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath)
+    {
+        Map<Node, Node> map = new HashMap<>();
+        for (Node node : each(root, entryXPath))
+        {
+            Node key = queryFirstNode(node, keySubXPath);
+            Node value = queryFirstNode(node, valueSubXPath);
+            map.put(key, value);
+        }
+        return map;
+    }
+
+    /**
+     * Executes the give entryXPath on the given {@link Node} to create an
+     * {@link Entry} for each found {@link Node}. From that found {@link Node}
+     * each entry-key is queried by the given keySubXPath and each entry-value
+     * is queried by the given valueSubXPath
+     *
+     * @param root
+     *            the {@link Node} to execute the given entryXPath-query from
+     * @param entryXPath
+     *            the xPath-query to execute on the given {@link Node} for all
+     *            entries
+     * @param keySubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the key of that {@link Entry}
+     * @param valueSubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the value of that {@link Entry}
+     * @return a {@link Map} of {@link String keyString} and {@link String
+     *         valueString}
+     *
+     * @since 1.0.0.RELEASE
      */
     public static Map<String, String> queryMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath)
     {
@@ -1071,55 +1147,194 @@ public abstract class XPathUtils
     }
 
     /**
-     * Executes the give entryXPath on the given {@link nu.xom.Node Node} to
-     * create an {@link java.util.Map.Entry Entry} for each found
-     * {@link nu.xom.Node Node}. From that found {@link nu.xom.Node Node} each
-     * entry-key is queried by the given keySubXPath and each entry-value is
-     * queried by the given valueSubXPath. Each entry-key is converted by the
-     * given {@link java.util.function.Function KeyConverter} and each
-     * entry-value is converted by the given {@link java.util.function.Function
-     * ValueConverter}
+     * Executes the give entryXPath on the given {@link Node} to create an
+     * {@link Entry} for each found {@link Node}. From that found {@link Node}
+     * each entry-key is queried by the given keySubXPath and each entry-value
+     * is queried by the given valueSubXPath. Each entry-key is converted by the
+     * given {@link Function keyConverter} and each entry-value is converted by
+     * the given {@link Function valueConverter}
      *
      * @param root
-     *            the {@link nu.xom.Node Node} to execute the given
-     *            entryXPath-query from
+     *            the {@link Node} to execute the given entryXPath-query from
      * @param entryXPath
-     *            the xPath-query to execute on the given {@link nu.xom.Node
-     *            Node} for all entries
+     *            the xPath-query to execute on the given {@link Node} for all
+     *            entries
      * @param keySubXPath
      *            the xPath-query to execute on every found entry-node to get
-     *            the key of that {@link java.util.Map.Entry Entry}
+     *            the key of that {@link Entry}
      * @param valueSubXPath
      *            the xPath-query to execute on every found entry-node to get
-     *            the value of that {@link java.util.Map.Entry Entry}
+     *            the value of that {@link Entry}
+     * @return a {@link Map} of key and value, each converted by the given
+     *         {@link Function keyConverter} and {@link Function valueConverter}
      *
-     * @see {@link com.avides.xpath.utils.XPathUtils#queryMap(Node, String, String, String)}
+     * @since 1.0.0.RELEASE
+     *
+     * @see #queryMap(Node, String, String, String, Class, Class, Class, Class)
      */
     public static <K, V> Map<K, V> queryMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath,
         Class<? extends Function<String, K>> keyConverterClass, Class<? extends Function<String, V>> valueConverterClass)
     {
-        Map<String, String> stringMap = queryMap(root, entryXPath, keySubXPath, valueSubXPath);
-        Map<K, V> map = new HashMap<>(stringMap.size());
-        Function<String, K> keyConverter = getConverter(keyConverterClass);
-        Function<String, V> valueConverter = getConverter(valueConverterClass);
-        for (Entry<String, String> entry : stringMap.entrySet())
+        return queryMap(root, entryXPath, keySubXPath, valueSubXPath, keyConverterClass, valueConverterClass, null, null);
+    }
+
+    /**
+     * Executes the give entryXPath on the given {@link Node} to create an
+     * {@link Entry} for each found {@link Node}. From that found {@link Node}
+     * each entry-key is queried by the given keySubXPath and each entry-value
+     * is queried by the given valueSubXPath. Each entry-key is converted by the
+     * given {@link Function keyConverter} and each entry-value is converted by
+     * the given {@link Function valueConverter}. If a {@link Class keySubType}
+     * is given, the {@link Function keyConverter} is ignored and the found
+     * entry-key-{@link Node} will be unmarshalled to the given {@link Class
+     * keySubType}. If a {@link Class valueSubType} is given, the
+     * {@link Function valueConverter} is ignored and the found
+     * entry-value-{@link Node} will be unmarshalled to the given {@link Class
+     * valueSubType}
+     *
+     * @param root
+     *            the {@link Node} to execute the given entryXPath-query from
+     * @param entryXPath
+     *            the xPath-query to execute on the given {@link Node} for all
+     *            entries
+     * @param keySubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the key of that {@link Entry}
+     * @param valueSubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the value of that {@link Entry}
+     * @param keySubType
+     *            the {@link Class} to unmarshall the found
+     *            entry-key-{@link Node}
+     * @param valueSubType
+     *            the {@link Class} to unmarshall the found
+     *            entry-value-{@link Node}
+     * @return a {@link Map} of key and value, each converted by the given
+     *         {@link Function keyConverter} and {@link Function valueConverter}
+     *         or unmarshalled to the given {@link Class keySubType} and
+     *         {@link Class valueSubType}
+     *
+     * @since 1.0.3.RELEASE
+     *
+     * @see #queryMap(Node, String, String, String)
+     */
+    public static <K, V> Map<K, V> queryMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath,
+        Class<? extends Function<String, K>> keyConverterClass, Class<? extends Function<String, V>> valueConverterClass, Class<K> keySubType,
+        Class<V> valueSubType)
+    {
+        Map<Node, Node> nodeMap = queryNodeMap(root, entryXPath, keySubXPath, valueSubXPath);
+        Map<K, V> map = new HashMap<>(nodeMap.size());
+        Function<String, K> keyConverter = null;
+        Function<String, V> valueConverter = null;
+        if (((keySubType == null) || (keySubType == String.class)) && (keyConverterClass != null))
         {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            map.put(keyConverter.apply(key), valueConverter.apply(value));
+            keyConverter = getConverter(keyConverterClass);
+        }
+        if (((valueSubType == null) || (keySubType == String.class)) && (valueConverterClass != null))
+        {
+            valueConverter = getConverter(valueConverterClass);
+        }
+        for (Entry<Node, Node> entry : nodeMap.entrySet())
+        {
+            Node keyNode = entry.getKey();
+            K key = null;
+            if (keyNode != null)
+            {
+                if ((keySubType != null) && (keySubType != String.class))
+                {
+                    key = XPathUtils.fromRoot((Element) keyNode, keySubType);
+                }
+                else if (keyConverter != null)
+                {
+                    key = keyConverter.apply(keyNode.getValue());
+                }
+            }
+            Node valueNode = entry.getValue();
+            V value = null;
+            if (valueNode != null)
+            {
+                if ((valueSubType != null) && (valueSubType != String.class))
+                {
+                    value = XPathUtils.fromRoot((Element) valueNode, valueSubType);
+                }
+                else if (valueConverter != null)
+                {
+                    value = valueConverter.apply(valueNode.getValue());
+                }
+            }
+            map.put(key, value);
         }
         return map;
     }
 
     /**
-     * Simply tests, if the given {@link nu.xom.Nodes Nodes} are not
-     * <code>null</code> and not empty
+     * Alias / shortcut for
+     * {@link #queryMap(Node, String, String, String, Class, Class, Class, Class)}
+     *
+     * @since 1.0.3.RELEASE
+     */
+    public static <K, V> Map<K, V> queryTypedMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<K> keySubType,
+        Class<V> valueSubType)
+    {
+        return queryMap(root, entryXPath, keySubXPath, valueSubXPath, null, null, keySubType, valueSubType);
+    }
+
+    /**
+     * Alias / shortcut for
+     * {@link #queryMap(Node, String, String, String, Class, Class, Class, Class)}
+     *
+     * @since 1.0.3.RELEASE
+     */
+    public static <K, V> Map<K, V> queryKeyTypedMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<K> keySubType,
+        Class<? extends Function<String, V>> valueConverterClass)
+    {
+        return queryMap(root, entryXPath, keySubXPath, valueSubXPath, null, valueConverterClass, keySubType, null);
+    }
+
+    /**
+     * Alias / shortcut for
+     * {@link #queryMap(Node, String, String, String, Class, Class, Class, Class)}
+     *
+     * @since 1.0.3.RELEASE
+     */
+    public static <K> Map<K, String> queryKeyTypedMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<K> keySubType)
+    {
+        return queryMap(root, entryXPath, keySubXPath, valueSubXPath, null, NoneConverter.class, keySubType, null);
+    }
+
+    /**
+     * Alias / shortcut for
+     * {@link #queryMap(Node, String, String, String, Class, Class, Class, Class)}
+     *
+     * @since 1.0.3.RELEASE
+     */
+    public static <K, V> Map<K, V> queryValueTypedMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath,
+        Class<? extends Function<String, K>> keyConverterClass, Class<V> valueSubType)
+    {
+        return queryMap(root, entryXPath, keySubXPath, valueSubXPath, keyConverterClass, null, null, valueSubType);
+    }
+
+    /**
+     * Alias / shortcut for
+     * {@link #queryMap(Node, String, String, String, Class, Class, Class, Class)}
+     *
+     * @since 1.0.3.RELEASE
+     */
+    public static <V> Map<String, V> queryValueTypedMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath, Class<V> valueSubType)
+    {
+        return queryMap(root, entryXPath, keySubXPath, valueSubXPath, NoneConverter.class, null, null, valueSubType);
+    }
+
+    /**
+     * Simply tests, if the given {@link Nodes} are not <code>null</code> and
+     * not empty
      *
      * @param nodes
-     *            the {@link nu.xom.Nodes Nodes} to test on
-     * @return true if the {@link nu.xom.Nodes Nodes} are not <code>null</code>
-     *         and not empty, false if the {@link nu.xom.Nodes Nodes} are
-     *         <code>null</code> or empty
+     *            the {@link Nodes} to test on
+     * @return true if the {@link Nodes} are not <code>null</code> and not
+     *         empty, false if the {@link Nodes} are <code>null</code> or empty
+     *
+     * @since 1.0.0.RELEASE
      */
     public static boolean hasNodes(Nodes nodes)
     {
@@ -1127,14 +1342,14 @@ public abstract class XPathUtils
     }
 
     /**
-     * Registeres the given explicit instance of a
-     * {@link java.util.function.Function Converter} to use, if a
-     * {@link java.util.function.Function Converter} of that class is used
+     * Registeres the given explicit instance of a {@link Function Converter} to
+     * use, if a {@link Function Converter} of that class is used
      *
      * @param converter
-     *            The instance of the {@link java.util.function.Function
-     *            Converter} to use if a {@link java.util.function.Function
-     *            Converter} of that class is used
+     *            The instance of the {@link Function Converter} to use if a
+     *            {@link Function Converter} of that class is used
+     *
+     * @since 1.0.2.RELEASE
      */
     @SuppressWarnings("unchecked")
     public static void registerConverterInstance(Function<String, ?> converter)
@@ -1143,27 +1358,82 @@ public abstract class XPathUtils
     }
 
     /**
-     * Registers a default {@link java.util.function.Function Converter} to use
-     * for unmarshalling when the value (after an annotated
-     * {@link java.util.function.Function Converter}-conversion) is a
-     * {@link java.lang.String String } but the field-type is not. So when the
-     * registered default-{@link java.util.function.Function Converter}s contain
-     * a matching one for the wanted field-type, it is used to convert the value
-     * to the wanted type
+     * Unregisters an instance of {@link Function Converter} by its
+     * {@link Class}
+     *
+     * @param converterClass
+     *            the {@link Class} of the {@link Function Converter}-instance
+     *            to be unregistered
+     *
+     * @since 1.0.3.RELEASE
+     */
+    public static void unregisterConverterInstance(Class<? extends Function<String, ?>> converterClass)
+    {
+        converterCache.remove(converterClass);
+    }
+
+    /**
+     * Clears all cached instances of {@link Function Converter}s
+     *
+     * @since 1.0.3.RELEASE
+     */
+    public static void clearConverterInstances()
+    {
+        converterCache.clear();
+    }
+
+    /**
+     * Registers a default {@link Function Converter} to use for unmarshalling
+     * when the value (after an annotated {@link Function Converter}-conversion)
+     * is a {@link String} but the field-type is not. So when the registered
+     * default-{@link Function Converter}s contain a matching one for the wanted
+     * field-type, it is used to convert the value to the wanted {@link Class}
      *
      * @param type
-     *            the type that matches the field-type and the given
-     *            {@link java.util.function.Function Converter}-result-type
+     *            the {@link Class} that matches the field-type and the given
+     *            {@link Function Converter}-result-type
      * @param converter
-     *            the {@link java.util.function.Function Converter} to use for
-     *            converting to the given type
-     * 
+     *            the {@link Function Converter} to use for converting to the
+     *            given {@link Class}
+     *
+     * @since 1.0.2.RELEASE
+     *
      * @see XPathUnmarshaller#registerDefaultConverterInstanceToType(Class,
      *      Function)
      */
     public static void registerDefaultConverterInstanceToType(Class<?> type, Function<String, ?> converter)
     {
         XPathUnmarshaller.registerDefaultConverterInstanceToType(type, converter);
+    }
+
+    /**
+     * Unregisters a {@link Function Converter} for default-conversion for the
+     * given {@link Class}
+     *
+     * @param type
+     *            the {@link Class} the {@link Function Converter} is registered
+     *            to convert to
+     *
+     * @since 1.0.3.RELEASE
+     *
+     * @see XPathUnmarshaller#unregisterDefaultConverterInstanceToType(Class)
+     */
+    public static void unregisterDefaultConverterInstanceToType(Class<?> type)
+    {
+        XPathUnmarshaller.unregisterDefaultConverterInstanceToType(type);
+    }
+
+    /**
+     * Resets all {@link Function Converters} for default-conversion to the
+     * default (clears all and puts the drefault ones)
+     *
+     * @since 1.0.3.RELEASE
+     *
+     * @see XPathUnmarshaller#resetDefaultConverterInstancesToType()
+     */
+    public static void resetDefaultConverterInstancesToType()
+    {
+        XPathUnmarshaller.resetDefaultConverterInstancesToType();
     }
 
     @SuppressWarnings("unchecked")

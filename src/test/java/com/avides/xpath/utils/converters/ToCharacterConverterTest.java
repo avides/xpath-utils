@@ -1,10 +1,10 @@
-package com.avides.xpath.utils.converter;
+package com.avides.xpath.utils.converters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
-import com.avides.xpath.utils.converter.ToCharacterConverter;
+import com.avides.xpath.utils.converters.ToCharacterConverter;
 
 public class ToCharacterConverterTest
 {
