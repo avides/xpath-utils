@@ -11,7 +11,7 @@ xpath-utils
 <dependency>
     <groupId>com.avides.xpath</groupId>
     <artifactId>xpath-utils</artifactId>
-    <version>1.0.3.RELEASE</version>
+    <version>1.1.0.RELEASE</version>
 </dependency>
 ```
 #### Available methods

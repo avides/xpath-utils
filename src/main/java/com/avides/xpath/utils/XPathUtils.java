@@ -1032,7 +1032,8 @@ public abstract class XPathUtils
      * {@link List} of the found values converted by the given {@link Function
      * Converter}. If the {@link Class subType} is given, the {@link Function
      * Converter} is ignored and the found {@link Node}s are unmarshalled to the
-     * given {@link Class subType}
+     * given {@link Class subType}. The given {@link Class subType} may also be
+     * an <code>enum</code>-{@link Class} to convert the values to
      *
      * @param <T>
      *            the type of the resulting list-items, determined by the given
@@ -1059,7 +1060,7 @@ public abstract class XPathUtils
             List<T> values = new ArrayList<>(nodeList.size());
             for (Node node : nodeList)
             {
-                values.add(XPathUtils.fromRoot((Element) node, subType));
+                values.add(unmarshallSubType(node, subType));
             }
             return values;
         }
@@ -1190,7 +1191,9 @@ public abstract class XPathUtils
      * keySubType}. If a {@link Class valueSubType} is given, the
      * {@link Function valueConverter} is ignored and the found
      * entry-value-{@link Node} will be unmarshalled to the given {@link Class
-     * valueSubType}
+     * valueSubType}. The given {@link Class keySubType} or {@link Class
+     * valueSubType} may also be an <code>enum</code>-{@link Class} to convert
+     * the keys and values to
      *
      * @param root
      *            the {@link Node} to execute the given entryXPath-query from
@@ -1236,32 +1239,8 @@ public abstract class XPathUtils
         }
         for (Entry<Node, Node> entry : nodeMap.entrySet())
         {
-            Node keyNode = entry.getKey();
-            K key = null;
-            if (keyNode != null)
-            {
-                if ((keySubType != null) && (keySubType != String.class))
-                {
-                    key = XPathUtils.fromRoot((Element) keyNode, keySubType);
-                }
-                else if (keyConverter != null)
-                {
-                    key = keyConverter.apply(keyNode.getValue());
-                }
-            }
-            Node valueNode = entry.getValue();
-            V value = null;
-            if (valueNode != null)
-            {
-                if ((valueSubType != null) && (valueSubType != String.class))
-                {
-                    value = XPathUtils.fromRoot((Element) valueNode, valueSubType);
-                }
-                else if (valueConverter != null)
-                {
-                    value = valueConverter.apply(valueNode.getValue());
-                }
-            }
+            K key = unmarshallOrConvert(entry.getKey(), keySubType, keyConverter);
+            V value = unmarshallOrConvert(entry.getValue(), valueSubType, valueConverter);
             map.put(key, value);
         }
         return map;
@@ -1454,6 +1433,36 @@ public abstract class XPathUtils
             }
         }
         return converter;
+    }
+
+    private static <T> T unmarshallOrConvert(Node node, Class<T> subType, Function<String, T> converter)
+    {
+        if (node != null)
+        {
+            if ((subType != null) && (subType != String.class))
+            {
+                return unmarshallSubType(node, subType);
+            }
+            else if (converter != null)
+            {
+                return converter.apply(node.getValue());
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings(
+    { "unchecked", "rawtypes" })
+    private static <T> T unmarshallSubType(Node node, Class<T> subType)
+    {
+        if (subType.isEnum())
+        {
+            return (T) Enum.valueOf((Class<Enum>) subType, node.getValue());
+        }
+        else
+        {
+            return XPathUtils.fromRoot((Element) node, subType);
+        }
     }
 
     private static <T> Document buildElement(T input, ToDocumentConverter<T> converter) throws ParsingException
