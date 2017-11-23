@@ -30,6 +30,7 @@ XPathUtils.queryElementList(Node root, String xPath);
 XPathUtils.queryEnum(Node root, String xPath, Class<E> enumClass);
 XPathUtils.queryFirst(Node root, String xPath);
 XPathUtils.queryFirst(Node root, String xPath, Class<? extends Function<String, T>> converterClass);
+XPathUtils.queryFirstToObject(Node root, String xPath, Class<? extends Function<String, ?>> converterClass);
 XPathUtils.queryFirstElement(Node root, String xPath);
 XPathUtils.queryFirstNode(Node root, String xPath);
 XPathUtils.queryFloat(Node root, String xPath);

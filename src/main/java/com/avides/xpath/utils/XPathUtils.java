@@ -432,6 +432,15 @@ public abstract class XPathUtils
     }
 
     /**
+     * a not generic alias for {@link #queryFirst(Node, String, Class)},
+     * internally used for annotation-processing
+     */
+    public static Object queryFirstToObject(Node root, String xPath, Class<? extends Function<String, ?>> converterClass)
+    {
+        return getConverter(converterClass).apply(queryFirst(root, xPath));
+    }
+
+    /**
      * Tests, if the given xPath-query on the given {@link Node} results to an
      * existing {@link Node}
      *
