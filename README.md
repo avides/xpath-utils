@@ -2,7 +2,7 @@ xpath-utils
 ===========
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.avides.xpath/xpath-utils/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.avides.xpath/xpath-utils)
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/49fe00fd4ec843b6ac21b2d3996f2de9)](https://www.codacy.com/app/developer_6/xpath-utils)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8bd9fcd993a54a18a62f9706795a5a55)](https://www.codacy.com/app/avides-builds/xpath-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=avides/xpath-utils&amp;utm_campaign=Badge_Grade)
 [![Coverage Status](https://coveralls.io/repos/github/avides/xpath-utils/badge.svg?branch=master)](https://coveralls.io/github/avides/xpath-utils?branch=master)
 [![Build Status](https://travis-ci.org/avides/xpath-utils.svg?branch=master)](https://travis-ci.org/avides/xpath-utils)
 
