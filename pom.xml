@@ -5,7 +5,7 @@
 	<name>xpath-utils</name>
     <description>Provides some utility-methods to simplify the use of XPath</description>
     <url>https://github.com/avides/xpath-utils</url>
-	<version>1.1.0.RELEASE</version>
+	<version>1.1.1.RELEASE</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
