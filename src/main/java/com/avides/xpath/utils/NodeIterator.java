@@ -13,8 +13,8 @@ import nu.xom.Nodes;
  * @author Martin Schumacher
  * @since 1.0.0.RELEASE
  *
- * @see {@link com.avides.xpath.utils.XPathUtils#each(Node, String)}
- * @see {@link com.avides.xpath.utils.XPathUtils#queryNodeList(Node, String)}
+ * @see com.avides.xpath.utils.XPathUtils#each(Node, String)
+ * @see com.avides.xpath.utils.XPathUtils#queryNodeList(Node, String)
  */
 public class NodeIterator implements Iterator<Node>, Iterable<Node>
 {

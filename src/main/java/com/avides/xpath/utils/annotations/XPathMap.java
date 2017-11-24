@@ -15,8 +15,9 @@ import com.avides.xpath.utils.converters.NoneConverter;
  * @author Martin Schumacher
  * @since 1.0.0.RELEASE
  *
- * @see {@link com.avides.xpath.utils.XPathUnmarshaller}
- * @see {@link com.avides.xpath.utils.XPathUtils#queryMap(nu.xom.Node, String, String, String, Class, Class)}
+ * @see com.avides.xpath.utils.XPathUnmarshaller
+ * @see com.avides.xpath.utils.XPathUtils#queryMap(nu.xom.Node, String, String,
+ *      String, Class, Class)
  */
 @Target(FIELD)
 @Retention(RUNTIME)
@@ -24,18 +25,24 @@ public @interface XPathMap
 {
     /**
      * the xPath-query to be executed to get all map-entries from
+     *
+     * @return the xPath-query for an entry
      */
     String entryXPath();
 
     /**
      * the xPath-query to be executed on each entry-node to get the entry-key
      * from
+     *
+     * @return the xPath-query for a key
      */
     String keySubXPath();
 
     /**
      * the xPath-query to be executed on each entry-node to get the entry-value
      * from
+     *
+     * @return the xPath-query for a value
      */
     String valueSubXPath();
 
@@ -43,6 +50,8 @@ public @interface XPathMap
      * the {@link Class} of a {@link Function Converter} to convert each
      * entry-key with. Default: {@link NoneConverter} which does not convert
      * anything
+     *
+     * @return the type of a {@link Function Converter} for the key
      */
     Class<? extends Function<String, ?>> keyConverterClass() default NoneConverter.class;
 
@@ -50,6 +59,8 @@ public @interface XPathMap
      * the {@link Class} of a {@link Function Converter} to convert each
      * entry-value with. Default: {@link NoneConverter} which does not convert
      * anything
+     *
+     * @return the type of a {@link Function Converter} for the value
      */
     Class<? extends Function<String, ?>> valueConverterClass() default NoneConverter.class;
 
@@ -58,6 +69,8 @@ public @interface XPathMap
      * {@link #keyConverterClass()} is ignored and the found {@link nu.xom.Nodes
      * Nodes} for the keys will be unmarshalled to the given {@link Class}.
      * Default: {@link String String.class}
+     *
+     * @return the generic-type of the map-key
      */
     Class<?> keySubTypeClass() default String.class;
 
@@ -66,6 +79,8 @@ public @interface XPathMap
      * {@link #valueConverterClass()} is ignored and the found
      * {@link nu.xom.Nodes Nodes} for the values will be unmarshalled to the
      * given {@link Class}. Default: {@link String String.class}
+     *
+     * @return the generic-type of the map-value
      */
     Class<?> valueSubTypeClass() default String.class;
 }

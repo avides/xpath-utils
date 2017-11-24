@@ -73,6 +73,9 @@ public class XPathUnmarshaller
     /**
      * unmarshalls from xml
      *
+     * @param <T>
+     *            the type of the resulting new instance, determined by the
+     *            given {@link Class}
      * @param xml
      *            xml to unmarshal from
      * @param type
@@ -91,6 +94,9 @@ public class XPathUnmarshaller
     /**
      * unmarshalls from {@link InputStream}
      *
+     * @param <T>
+     *            the type of the resulting new instance, determined by the
+     *            given {@link Class}
      * @param inputStream
      *            {@link InputStream} to unmarshal from
      * @param type
@@ -110,6 +116,9 @@ public class XPathUnmarshaller
     /**
      * unmarshalls from {@link Reader}
      *
+     * @param <T>
+     *            the type of the resulting new instance, determined by the
+     *            given {@link Class}
      * @param reader
      *            {@link Reader} to unmarshal from
      * @param type
@@ -129,6 +138,9 @@ public class XPathUnmarshaller
     /**
      * unmarshalls from {@link File}
      *
+     * @param <T>
+     *            the type of the resulting new instance, determined by the
+     *            given {@link Class}
      * @param file
      *            {@link File} to unmarshal from
      * @param type
@@ -148,6 +160,9 @@ public class XPathUnmarshaller
     /**
      * unmarshalls from {@link Element}
      *
+     * @param <T>
+     *            the type of the resulting new instance, determined by the
+     *            given {@link Class}
      * @param root
      *            {@link Element} to unmarshal from
      * @param type

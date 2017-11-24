@@ -15,8 +15,8 @@ import com.avides.xpath.utils.converters.NoneConverter;
  * @author Martin Schumacher
  * @since 1.0.0.RELEASE
  *
- * @see {@link com.avides.xpath.utils.XPathUnmarshaller}
- * @see {@link com.avides.xpath.utils.XPathUtils#queryList(nu.xom.Node, String, Class)}
+ * @see com.avides.xpath.utils.XPathUnmarshaller
+ * @see com.avides.xpath.utils.XPathUtils#queryList(nu.xom.Node, String, Class)
  */
 @Target(FIELD)
 @Retention(RUNTIME)
@@ -24,12 +24,16 @@ public @interface XPathList
 {
     /**
      * the xPath-query to be executed to get a list of node-values
+     *
+     * @return the xPath-query
      */
     String value();
 
     /**
      * the type of a {@link Function Converter} to convert each list-item with.
      * Default: {@link NoneConverter} which does not convert anything
+     *
+     * @return the type of a {@link Function Converter}
      */
     Class<? extends Function<String, ?>> converterClass() default NoneConverter.class;
 
@@ -38,6 +42,8 @@ public @interface XPathList
      * {@link #converterClass()} is ignored and the found {@link nu.xom.Nodes
      * Nodes} will be unmarshalled to the given {@link Class}. Default:
      * {@link String String.class}
+     *
+     * @return the generic-type of the list
      */
     Class<?> subTypeClass() default String.class;
 }

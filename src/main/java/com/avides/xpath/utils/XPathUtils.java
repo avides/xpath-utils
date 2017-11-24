@@ -166,6 +166,9 @@ public abstract class XPathUtils
      * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
      * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
      *
+     * @param <T>
+     *            the type of the resulting new instance, determined by the
+     *            given {@link Class}
      * @param inputStream
      *            the {@link InputStream} to be unmarshalled
      * @param type
@@ -192,6 +195,9 @@ public abstract class XPathUtils
      * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
      * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
      *
+     * @param <T>
+     *            the type of the resulting new instance, determined by the
+     *            given {@link Class}
      * @param reader
      *            the {@link Reader} to be unmarshalled
      * @param type
@@ -218,6 +224,9 @@ public abstract class XPathUtils
      * {@link com.avides.xpath.utils.annotations.XPathList XPathList} and
      * {@link com.avides.xpath.utils.annotations.XPathMap XPathMap}
      *
+     * @param <T>
+     *            the type of the resulting new instance, determined by the
+     *            given {@link Class}
      * @param file
      *            the {@link File} to be unmarshalled
      * @param type
@@ -244,6 +253,9 @@ public abstract class XPathUtils
      * XPathList} and {@link com.avides.xpath.utils.annotations.XPathMap
      * XPathMap}
      *
+     * @param <T>
+     *            the type of the resulting new instance, determined by the
+     *            given {@link Class}
      * @param xml
      *            the xml to be unmarshalled
      * @param type
@@ -414,6 +426,9 @@ public abstract class XPathUtils
      * first found value converted by the given {@link Function Converter} or
      * <code>null</code> if no value was found
      *
+     * @param <T>
+     *            the type of the resulting value, determined by the given
+     *            {@link Function Converter}
      * @param root
      *            the {@link Node} to execute the given xPath-query from
      * @param xPath
@@ -768,7 +783,7 @@ public abstract class XPathUtils
      * @param xPath
      *            the xPath-query to execute on the given {@link Node}
      * @return the found value converted to a primitive <code>boolean</code>,
-     *         <code>boolean false</codes> if no value was found
+     *         <code>boolean false</code> if no value was found
      *
      * @since 1.0.0.RELEASE
      *
@@ -854,10 +869,15 @@ public abstract class XPathUtils
      * found value to the wanted {@link Enum}. If the value is empty,
      * <code>null</code> will be returned
      *
+     * @param <E>
+     *            the type of the resulting enum, determined by the given
+     *            {@link Class}
      * @param root
      *            the {@link Node} to execute the given xPath-query from
      * @param xPath
      *            the xPath-query to execute on the given {@link Node}
+     * @param enumType
+     *            the type of the wanted {@link Enum}
      * @return the found value converted to a {@link Enum}, <code>null</code> if
      *         no value was found, is empty or could not be converted to a
      *         {@link Enum}
@@ -1034,7 +1054,7 @@ public abstract class XPathUtils
      *
      * @param <T>
      *            the type of the resulting list-items, determined by the given
-     *            {@link Function Converter}
+     *            {@link Function Converter} or {@link Class}
      * @param root
      *            the {@link Node} to execute the given xPath-query from
      * @param xPath
@@ -1042,6 +1062,8 @@ public abstract class XPathUtils
      * @param converterClass
      *            the {@link Function Converter} (given by the {@link Class}) to
      *            convert the values with
+     * @param subType
+     *            the {@link Class} to unmarshall the values to
      * @return a {@link List} of the found values converted by the given
      *         {@link Function Converter}, or a {@link List} of the given
      *         {@link Class subType}, if a {@link Class subType is given}. Will
@@ -1065,7 +1087,24 @@ public abstract class XPathUtils
     }
 
     /**
-     * Alias / shortcut for {@link #queryList(Node, String, Class, Class)
+     * Executes the given xPath-query on the given {@link Node} and returns a
+     * {@link List} of the found values unmarshalled to the given {@link Class
+     * subType}. The given {@link Class subType} may also be an
+     * <code>enum</code>-{@link Class} to convert the values to
+     *
+     * @param <T>
+     *            the type of the resulting list-items, determined by the given
+     *            {@link Function Converter} or {@link Class}
+     * @param root
+     *            the {@link Node} to execute the given xPath-query from
+     * @param xPath
+     *            the xPath-query to execute on the given {@link Node}
+     * @param subType
+     *            the {@link Class} to unmarshall the values to
+     * @return a {@link List} of the found values converted by the given
+     *         {@link Function Converter}, or a {@link List} of the given
+     *         {@link Class subType}, if a {@link Class subType is given}. Will
+     *         never be <code>null</code>
      *
      * @since 1.0.3.RELEASE
      */
@@ -1149,6 +1188,12 @@ public abstract class XPathUtils
      * given {@link Function keyConverter} and each entry-value is converted by
      * the given {@link Function valueConverter}
      *
+     * @param <K>
+     *            the type of the map-keys determined by the given
+     *            {@link Function keyConverter}
+     * @param <V>
+     *            the type of the map-values determined by the given
+     *            {@link Function valueConverter}
      * @param root
      *            the {@link Node} to execute the given entryXPath-query from
      * @param entryXPath
@@ -1160,8 +1205,13 @@ public abstract class XPathUtils
      * @param valueSubXPath
      *            the xPath-query to execute on every found entry-node to get
      *            the value of that {@link Entry}
-     * @return a {@link Map} of key and value, each converted by the given
-     *         {@link Function keyConverter} and {@link Function valueConverter}
+     * @param keyConverterClass
+     *            the {@link Function keyConverter} (given by the {@link Class})
+     *            to convert the keys with
+     * @param valueConverterClass
+     *            the {@link Function valueConverter} (given by the
+     *            {@link Class}) to convert the values with
+     * @return a {@link Map} of key and value
      *
      * @since 1.0.0.RELEASE
      *
@@ -1189,6 +1239,12 @@ public abstract class XPathUtils
      * valueSubType} may also be an <code>enum</code>-{@link Class} to convert
      * the keys and values to
      *
+     * @param <K>
+     *            the type of the map-keys determined by the given
+     *            {@link Function keyConverter} or {@link Class keySubType}
+     * @param <V>
+     *            the type of the map-values determined by the given
+     *            {@link Function valueConverter} or {@link Class valueSubType}
      * @param root
      *            the {@link Node} to execute the given entryXPath-query from
      * @param entryXPath
@@ -1200,20 +1256,21 @@ public abstract class XPathUtils
      * @param valueSubXPath
      *            the xPath-query to execute on every found entry-node to get
      *            the value of that {@link Entry}
+     * @param keyConverterClass
+     *            the {@link Function keyConverter} (given by the {@link Class})
+     *            to convert the keys with
+     * @param valueConverterClass
+     *            the {@link Function valueConverter} (given by the
+     *            {@link Class}) to convert the values with
      * @param keySubType
      *            the {@link Class} to unmarshall the found
      *            entry-key-{@link Node}
      * @param valueSubType
      *            the {@link Class} to unmarshall the found
      *            entry-value-{@link Node}
-     * @return a {@link Map} of key and value, each converted by the given
-     *         {@link Function keyConverter} and {@link Function valueConverter}
-     *         or unmarshalled to the given {@link Class keySubType} and
-     *         {@link Class valueSubType}
+     * @return a {@link Map} of key and value
      *
      * @since 1.0.3.RELEASE
-     *
-     * @see #queryMap(Node, String, String, String)
      */
     public static <K, V> Map<K, V> queryMap(Node root, String entryXPath, String keySubXPath, String valueSubXPath,
         Class<? extends Function<String, K>> keyConverterClass, Class<? extends Function<String, V>> valueConverterClass, Class<K> keySubType,
@@ -1241,8 +1298,40 @@ public abstract class XPathUtils
     }
 
     /**
-     * Alias / shortcut for
-     * {@link #queryMap(Node, String, String, String, Class, Class, Class, Class)}
+     * Executes the give entryXPath on the given {@link Node} to create an
+     * {@link Entry} for each found {@link Node}. From that found {@link Node}
+     * each entry-key is queried by the given keySubXPath and each entry-value
+     * is queried by the given valueSubXPath. Each entry-key-{@link Node} will
+     * be unmarshalled to the given {@link Class keySubType} and each
+     * entry-value-{@link Node} will be unmarshalled to the given {@link Class
+     * valueSubType}. The given {@link Class keySubType} or {@link Class
+     * valueSubType} may also be an <code>enum</code>-{@link Class} to convert
+     * the keys and values to
+     *
+     * @param <K>
+     *            the type of the map-keys determined by the given {@link Class
+     *            keySubType}
+     * @param <V>
+     *            the type of the map-values determined by the given
+     *            {@link Class valueSubType}
+     * @param root
+     *            the {@link Node} to execute the given entryXPath-query from
+     * @param entryXPath
+     *            the xPath-query to execute on the given {@link Node} for all
+     *            entries
+     * @param keySubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the key of that {@link Entry}
+     * @param valueSubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the value of that {@link Entry}
+     * @param keySubType
+     *            the {@link Class} to unmarshall the found
+     *            entry-key-{@link Node}
+     * @param valueSubType
+     *            the {@link Class} to unmarshall the found
+     *            entry-value-{@link Node}
+     * @return a {@link Map} of key and value
      *
      * @since 1.0.3.RELEASE
      */
@@ -1253,8 +1342,39 @@ public abstract class XPathUtils
     }
 
     /**
-     * Alias / shortcut for
-     * {@link #queryMap(Node, String, String, String, Class, Class, Class, Class)}
+     * Executes the give entryXPath on the given {@link Node} to create an
+     * {@link Entry} for each found {@link Node}. From that found {@link Node}
+     * each entry-key is queried by the given keySubXPath and each entry-value
+     * is queried by the given valueSubXPath. Each entry-key-{@link Node} will
+     * be unmarshalled to the given {@link Class keySubType}. Each
+     * entry-value-{@link Node} is converted by the given {@link Function
+     * valueConverter}. The given {@link Class keySubType} may also be an
+     * <code>enum</code>-{@link Class} to convert the keys to
+     *
+     * @param <K>
+     *            the type of the map-keys determined by the given {@link Class
+     *            keySubType}
+     * @param <V>
+     *            the type of the map-values determined by the given
+     *            {@link Function valueConverter}
+     * @param root
+     *            the {@link Node} to execute the given entryXPath-query from
+     * @param entryXPath
+     *            the xPath-query to execute on the given {@link Node} for all
+     *            entries
+     * @param keySubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the key of that {@link Entry}
+     * @param valueSubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the value of that {@link Entry}
+     * @param keySubType
+     *            the {@link Class} to unmarshall the found
+     *            entry-key-{@link Node}
+     * @param valueConverterClass
+     *            the {@link Function valueConverter} (given by the
+     *            {@link Class}) to convert the values with
+     * @return a {@link Map} of key and value
      *
      * @since 1.0.3.RELEASE
      */
@@ -1265,8 +1385,33 @@ public abstract class XPathUtils
     }
 
     /**
-     * Alias / shortcut for
-     * {@link #queryMap(Node, String, String, String, Class, Class, Class, Class)}
+     * Executes the give entryXPath on the given {@link Node} to create an
+     * {@link Entry} for each found {@link Node}. From that found {@link Node}
+     * each entry-key is queried by the given keySubXPath and each entry-value
+     * is queried by the given valueSubXPath. Each entry-key-{@link Node} will
+     * be unmarshalled to the given {@link Class keySubType}. Each entry-value
+     * is the plain {@link Node}-value as {@link String}. The given {@link Class
+     * keySubType} may also be an <code>enum</code>-{@link Class} to convert the
+     * keys to
+     *
+     * @param <K>
+     *            the type of the map-keys determined by the given {@link Class
+     *            keySubType}
+     * @param root
+     *            the {@link Node} to execute the given entryXPath-query from
+     * @param entryXPath
+     *            the xPath-query to execute on the given {@link Node} for all
+     *            entries
+     * @param keySubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the key of that {@link Entry}
+     * @param valueSubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the value of that {@link Entry}
+     * @param keySubType
+     *            the {@link Class} to unmarshall the found
+     *            entry-key-{@link Node}
+     * @return a {@link Map} of key and {@link String valueString}
      *
      * @since 1.0.3.RELEASE
      */
@@ -1276,8 +1421,39 @@ public abstract class XPathUtils
     }
 
     /**
-     * Alias / shortcut for
-     * {@link #queryMap(Node, String, String, String, Class, Class, Class, Class)}
+     * Executes the give entryXPath on the given {@link Node} to create an
+     * {@link Entry} for each found {@link Node}. From that found {@link Node}
+     * each entry-key is queried by the given keySubXPath and each entry-value
+     * is queried by the given valueSubXPath. Each entry-key-{@link Node} is
+     * converted by the given {@link Function keyConverter}. Each
+     * entry-value-{@link Node} will be unmarshalled to the given {@link Class
+     * valueSubType}. The given {@link Class valueSubType} may also be an
+     * <code>enum</code>-{@link Class} to convert the values to
+     *
+     * @param <K>
+     *            the type of the map-keys determined by the given
+     *            {@link Function keyConverter}
+     * @param <V>
+     *            the type of the map-values determined by the given
+     *            {@link Class valueSubType}
+     * @param root
+     *            the {@link Node} to execute the given entryXPath-query from
+     * @param entryXPath
+     *            the xPath-query to execute on the given {@link Node} for all
+     *            entries
+     * @param keySubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the key of that {@link Entry}
+     * @param valueSubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the value of that {@link Entry}
+     * @param keyConverterClass
+     *            the {@link Function keyConverter} (given by the {@link Class})
+     *            to convert the keys with
+     * @param valueSubType
+     *            the {@link Class} to unmarshall the found
+     *            entry-value-{@link Node}
+     * @return a {@link Map} of key and value
      *
      * @since 1.0.3.RELEASE
      */
@@ -1288,8 +1464,33 @@ public abstract class XPathUtils
     }
 
     /**
-     * Alias / shortcut for
-     * {@link #queryMap(Node, String, String, String, Class, Class, Class, Class)}
+     * Executes the give entryXPath on the given {@link Node} to create an
+     * {@link Entry} for each found {@link Node}. From that found {@link Node}
+     * each entry-key is queried by the given keySubXPath and each entry-value
+     * is queried by the given valueSubXPath. Each entry-key is the plain
+     * {@link Node}-value as {@link String}. Each entry-value-{@link Node} will
+     * be unmarshalled to the given {@link Class valueSubType}. The given
+     * {@link Class valueSubType} may also be an <code>enum</code>-{@link Class}
+     * to convert the values to
+     *
+     * @param <V>
+     *            the type of the map-values determined by the given
+     *            {@link Class valueSubType}
+     * @param root
+     *            the {@link Node} to execute the given entryXPath-query from
+     * @param entryXPath
+     *            the xPath-query to execute on the given {@link Node} for all
+     *            entries
+     * @param keySubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the key of that {@link Entry}
+     * @param valueSubXPath
+     *            the xPath-query to execute on every found entry-node to get
+     *            the value of that {@link Entry}
+     * @param valueSubType
+     *            the {@link Class} to unmarshall the found
+     *            entry-value-{@link Node}
+     * @return a {@link Map} of {@link String keyString} and value
      *
      * @since 1.0.3.RELEASE
      */
