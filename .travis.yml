@@ -5,6 +5,8 @@ cache:
   directories:
   - .autoconf
   - $HOME/.m2
-install: mvn package -Dgpg.skip=true
+install:
+ - mvn --version
+ - mvn package -Dgpg.skip=true
 after_success:
   - mvn clean test cobertura:cobertura coveralls:report
