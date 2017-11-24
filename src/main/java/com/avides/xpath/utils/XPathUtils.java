@@ -316,7 +316,7 @@ public abstract class XPathUtils
      */
     public static List<Node> queryNodeList(Node root, String xPath)
     {
-        List<Node> nodeList = new ArrayList<Node>();
+        List<Node> nodeList = new ArrayList<>();
         for (Node node : each(root, xPath))
         {
             nodeList.add(node);
@@ -341,7 +341,7 @@ public abstract class XPathUtils
      */
     public static List<Element> queryElementList(Node root, String xPath)
     {
-        List<Element> elementList = new ArrayList<Element>();
+        List<Element> elementList = new ArrayList<>();
         for (Node node : each(root, xPath))
         {
             elementList.add((Element) node);
@@ -1021,10 +1021,7 @@ public abstract class XPathUtils
             Function<String, T> converter = getConverter(converterClass);
             return stringList.map(item -> converter.apply(item)).collect(toList());
         }
-        else
-        {
-            return (List<T>) stringList.map(item -> null).collect(toList());
-        }
+        return (List<T>) stringList.map(item -> null).collect(toList());
     }
 
     /**
@@ -1064,10 +1061,7 @@ public abstract class XPathUtils
             }
             return values;
         }
-        else
-        {
-            return queryList(root, xPath, converterClass);
-        }
+        return queryList(root, xPath, converterClass);
     }
 
     /**
@@ -1459,10 +1453,7 @@ public abstract class XPathUtils
         {
             return (T) Enum.valueOf((Class<Enum>) subType, node.getValue());
         }
-        else
-        {
-            return XPathUtils.fromRoot((Element) node, subType);
-        }
+        return XPathUtils.fromRoot((Element) node, subType);
     }
 
     private static <T> Document buildElement(T input, ToDocumentConverter<T> converter) throws ParsingException

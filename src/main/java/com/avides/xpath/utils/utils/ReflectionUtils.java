@@ -15,11 +15,11 @@ public class ReflectionUtils
 {
     private static final Map<Class<?>, Field[]> declaredFieldsCache = new HashMap<>(256);
 
-    private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new IdentityHashMap<Class<?>, Class<?>>(8);
+    private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new IdentityHashMap<>(8);
 
-    private static final Map<Class<?>, Class<?>> primitiveTypeToWrapperMap = new IdentityHashMap<Class<?>, Class<?>>(8);
+    private static final Map<Class<?>, Class<?>> primitiveTypeToWrapperMap = new IdentityHashMap<>(8);
 
-    private static final Map<Class<?>, Object> primitiveNullValuesMap = new IdentityHashMap<Class<?>, Object>(8);
+    private static final Map<Class<?>, Object> primitiveNullValuesMap = new IdentityHashMap<>(8);
 
     private static final Field[] NO_FIELDS =
     {};

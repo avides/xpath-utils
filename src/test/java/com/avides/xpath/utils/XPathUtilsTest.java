@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -67,7 +66,7 @@ public class XPathUtilsTest extends XPathTestSupport
     }
 
     @Test
-    public void testFromRoot() throws ParsingException
+    public void testFromRoot()
     {
         AnyObject anyObject = XPathUtils.fromRoot(root, AnyObject.class);
         assertAnyObjectIsCorrect(anyObject);
@@ -81,7 +80,7 @@ public class XPathUtilsTest extends XPathTestSupport
     }
 
     @Test
-    public void testFromReader() throws ParsingException, IOException
+    public void testFromReader() throws ParsingException
     {
         AnyObject anyObject = XPathUtils.fromReader(new StringReader(xml), AnyObject.class);
         assertAnyObjectIsCorrect(anyObject);
@@ -107,7 +106,7 @@ public class XPathUtilsTest extends XPathTestSupport
     }
 
     @Test
-    public void testGetRootElementFromFile() throws ParsingException, URISyntaxException
+    public void testGetRootElementFromFile() throws ParsingException
     {
         assertThat(XPathUtils.getRootElement(new File(getClass().getClassLoader().getResource("test.xml").getFile())).getLocalName()).isEqualTo("root");
     }

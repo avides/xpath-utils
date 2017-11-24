@@ -2,8 +2,6 @@ package com.avides.xpath.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-
 import org.junit.Test;
 
 import com.avides.xpath.utils.testsupport.XPathTestSupport;
@@ -15,7 +13,7 @@ public class XPathUnmarshallerTest extends XPathTestSupport
     private XPathUnmarshaller unmarshaller = XPathUnmarshaller.getInstance();
 
     @Test
-    public void testUnmarshal() throws ParsingException, IOException
+    public void testUnmarshal() throws ParsingException
     {
         AnyObject anyObject = unmarshaller.unmarshal(xml, AnyObject.class);
 

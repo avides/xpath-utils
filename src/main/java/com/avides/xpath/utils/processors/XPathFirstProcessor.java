@@ -33,7 +33,9 @@ public class XPathFirstProcessor extends AbstractAnnotationProcessor
             }
             else
             {
-                Object value = XPathUtils.queryFirst(root, xPathFirst.value(), xPathFirst.converterClass());
+
+                @SuppressWarnings("unchecked") Object value = XPathUtils.queryFirst(root, xPathFirst.value(),
+                    (Class<? extends Function<String, Object>>) xPathFirst.converterClass());
                 setFieldValueExtended(field, target, value);
             }
         }

@@ -33,7 +33,7 @@ public abstract class AbstractAnnotationProcessor
         this.defaultToTypeConverters = defaultToTypeConverters;
     }
 
-    protected boolean setFieldValueSimple(Field field, Object target, Object value, boolean throwExceptionIfFieldCouldNotBeSet)
+    protected <T> boolean setFieldValueSimple(Field field, Object target, T value, boolean throwExceptionIfFieldCouldNotBeSet)
     {
         try
         {
@@ -57,21 +57,18 @@ public abstract class AbstractAnnotationProcessor
                 }
                 return true;
             }
-            else
+            if (ReflectionUtils.isAssignable(field.getType(), value.getClass()))
             {
-                if (ReflectionUtils.isAssignable(field.getType(), value.getClass()))
+                setFieldValue(field, target, value);
+                return true;
+            }
+            else if ((value.getClass() == String.class) && !ReflectionUtils.isAssignable(field.getType(), value.getClass()))
+            {
+                Function<String, ?> converter = defaultToTypeConverters.get(field.getType());
+                if (converter != null)
                 {
-                    setFieldValue(field, target, value);
+                    setFieldValue(field, target, converter.apply((String) value));
                     return true;
-                }
-                else if ((value.getClass() == String.class) && !ReflectionUtils.isAssignable(field.getType(), value.getClass()))
-                {
-                    Function<String, ?> converter = defaultToTypeConverters.get(field.getType());
-                    if (converter != null)
-                    {
-                        setFieldValue(field, target, converter.apply((String) value));
-                        return true;
-                    }
                 }
             }
         }
@@ -89,7 +86,7 @@ public abstract class AbstractAnnotationProcessor
 
     @SuppressWarnings(
     { "rawtypes", "unchecked" })
-    protected void setFieldValueExtended(Field field, Object target, Object value)
+    protected <T> void setFieldValueExtended(Field field, Object target, T value)
     {
         try
         {
@@ -121,7 +118,7 @@ public abstract class AbstractAnnotationProcessor
         }
     }
 
-    private void setFieldValue(Field field, Object target, Object value) throws IllegalArgumentException, IllegalAccessException
+    private <T> void setFieldValue(Field field, Object target, T value) throws IllegalArgumentException, IllegalAccessException
     {
         if ((!Modifier.isPublic(field.getModifiers()) ||
             !Modifier.isPublic(field.getDeclaringClass().getModifiers()) ||
