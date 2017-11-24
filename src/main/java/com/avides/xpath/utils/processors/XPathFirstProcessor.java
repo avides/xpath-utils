@@ -33,7 +33,7 @@ public class XPathFirstProcessor extends AbstractAnnotationProcessor
             }
             else
             {
-                Object value = XPathUtils.queryFirstToObject(root, xPathFirst.value(), xPathFirst.converterClass());
+                Object value = XPathUtils.queryFirst(root, xPathFirst.value(), xPathFirst.converterClass());
                 setFieldValueExtended(field, target, value);
             }
         }
