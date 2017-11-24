@@ -42,6 +42,16 @@ pipeline
             }
         }
         
+        stage('Release')
+        {
+            when { branch "master" }
+        
+            steps
+            {
+                sh 'mvn clean deploy -Dmaven.test.skip=true'
+            }
+        }
+        
         stage('SonarQube')
         {
             steps
