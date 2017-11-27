@@ -51,11 +51,102 @@ public class XPathUtilsTest extends XPathTestSupport
     }
 
     @Test
+    public void testQueryValueTypedMap()
+    {
+        assertThat(XPathUtils.queryValueTypedMap(root, "valueTypedMap/entry", "string", "subObject", AnySubObject.class)).hasSize(4)
+            .containsEntry("123", new AnySubObject("234"))
+            .containsEntry("234", new AnySubObject("345"))
+            .containsEntry("345", null)
+            .containsEntry("456", new AnySubObject("456"));
+    }
+
+    @Test
+    public void testQueryValueTypedMapToKnownType()
+    {
+        assertThat(XPathUtils.queryValueTypedMap(root, "valueTypedMap/entry", "string", "subObject/singleString", Integer.class)).hasSize(4)
+            .containsEntry("123", Integer.valueOf(234))
+            .containsEntry("234", Integer.valueOf(345))
+            .containsEntry("345", null)
+            .containsEntry("456", Integer.valueOf(456));
+    }
+
+    @Test
+    public void testQueryValueTypedMapWithKeyConverter()
+    {
+        assertThat(XPathUtils.queryValueTypedMap(root, "valueTypedMap/entry", "string", "subObject", ToIntegerConverter.class, AnySubObject.class)).hasSize(4)
+            .containsEntry(Integer.valueOf(123), new AnySubObject("234"))
+            .containsEntry(Integer.valueOf(234), new AnySubObject("345"))
+            .containsEntry(Integer.valueOf(345), null)
+            .containsEntry(Integer.valueOf(456), new AnySubObject("456"));
+    }
+
+    @Test
+    public void testQueryKeyTypedMap()
+    {
+        assertThat(XPathUtils.queryKeyTypedMap(root, "keyTypedMap/entry", "subObject", "string", AnySubObject.class)).hasSize(4)
+            .containsEntry(new AnySubObject("123"), "123")
+            .containsEntry(new AnySubObject("234"), "234")
+            .containsEntry(null, "345")
+            .containsEntry(new AnySubObject("345"), "456");
+    }
+
+    @Test
+    public void testQueryKeyTypedMapWithKnownType()
+    {
+        assertThat(XPathUtils.queryKeyTypedMap(root, "keyTypedMap/entry", "subObject/singleString", "string", Integer.class)).hasSize(4)
+            .containsEntry(Integer.valueOf(123), "123")
+            .containsEntry(Integer.valueOf(234), "234")
+            .containsEntry(null, "345")
+            .containsEntry(Integer.valueOf(345), "456");
+    }
+
+    @Test
+    public void testQueryKeyTypedMapWithValueConverter()
+    {
+        assertThat(XPathUtils.queryKeyTypedMap(root, "keyTypedMap/entry", "subObject", "string", AnySubObject.class, ToIntegerConverter.class)).hasSize(4)
+            .containsEntry(new AnySubObject("123"), Integer.valueOf(123))
+            .containsEntry(new AnySubObject("234"), Integer.valueOf(234))
+            .containsEntry(null, Integer.valueOf(345))
+            .containsEntry(new AnySubObject("345"), Integer.valueOf(456));
+    }
+
+    @Test
+    public void testQueryTypedMap()
+    {
+        assertThat(XPathUtils.queryTypedMap(root, "typedMap/entry", "subObject[1]", "subObject[2]", AnySubObject.class, AnySubObject.class)).hasSize(4)
+            .containsEntry(new AnySubObject("anyKey1"), new AnySubObject("anyValue1"))
+            .containsEntry(new AnySubObject("anyKey2"), new AnySubObject("anyValue2"))
+            .containsEntry(new AnySubObject("anyKey3"), null)
+            .containsEntry(new AnySubObject("anyKey4"), new AnySubObject("anyValue4"));
+    }
+
+    @Test
     public void testQueryList()
     {
         assertThat(XPathUtils.queryList(root, "list/value")).containsExactly("567", "678", "789");
         assertThat(XPathUtils.queryList(root, "list/value", ToIntegerConverter.class)).containsExactly(Integer.valueOf(567), Integer.valueOf(678),
             Integer.valueOf(789));
+    }
+
+    @Test
+    public void testQueryTypesList()
+    {
+        assertThat(XPathUtils.queryTypedList(root, "typedList/subObject", AnySubObject.class)).containsExactly(new AnySubObject("123"), new AnySubObject("234"),
+            new AnySubObject("345"));
+    }
+
+    @Test
+    public void testQueryTypedListWithKnownType()
+    {
+        assertThat(XPathUtils.queryTypedList(root, "list/value", Integer.class)).containsExactly(Integer.valueOf(567), Integer.valueOf(678),
+            Integer.valueOf(789));
+    }
+
+    @Test
+    public void testQueryListWithoutConverter()
+    {
+        assertThat(XPathUtils.queryList(root, "list/value")).containsExactly("567", "678", "789");
+        assertThat(XPathUtils.queryList(root, "list/value", null)).containsExactly(null, null, null);
     }
 
     @Test

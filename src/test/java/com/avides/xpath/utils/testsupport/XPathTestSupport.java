@@ -104,6 +104,9 @@ public abstract class XPathTestSupport
         @XPathFirst("singleEnum")
         private AnyEnum anyEnum;
 
+        @XPathFirst("emptyValue")
+        private AnyEnum emptyEnum;
+
         @XPathFirst(value = "subObject", isSubType = true)
         private AnySubObject anySubObject;
 
@@ -180,6 +183,11 @@ public abstract class XPathTestSupport
         public AnyEnum getAnyEnum()
         {
             return anyEnum;
+        }
+
+        public AnyEnum getEmptyEnum()
+        {
+            return emptyEnum;
         }
 
         public AnySubObject getAnySubObject()

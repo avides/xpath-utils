@@ -22,11 +22,99 @@
 			<string>456</string>
 		</entry>
 	</map>
+	<valueTypedMap>
+        <entry>
+            <string>123</string>
+            <subObject>
+                <singleString>234</singleString>
+            </subObject>
+        </entry>
+        <entry>
+            <string>234</string>
+            <subObject>
+                <singleString>345</singleString>
+            </subObject>
+        </entry>
+        <entry>
+            <string>345</string>
+        </entry>
+        <entry>
+            <string>456</string>
+            <subObject>
+                <singleString>456</singleString>
+            </subObject>
+        </entry>
+    </valueTypedMap>
+    <keyTypedMap>
+        <entry>
+            <subObject>
+                <singleString>123</singleString>
+            </subObject>
+            <string>123</string>
+        </entry>
+        <entry>
+            <subObject>
+                <singleString>234</singleString>
+            </subObject>
+            <string>234</string>
+        </entry>
+        <entry>
+            <string>345</string>
+        </entry>
+        <entry>
+            <subObject>
+                <singleString>345</singleString>
+            </subObject>
+            <string>456</string>
+        </entry>
+    </keyTypedMap>
+    <typedMap>
+        <entry>
+            <subObject>
+                <singleString>anyKey1</singleString>
+            </subObject>
+            <subObject>
+                <singleString>anyValue1</singleString>
+            </subObject>
+        </entry>
+        <entry>
+            <subObject>
+                <singleString>anyKey2</singleString>
+            </subObject>
+            <subObject>
+                <singleString>anyValue2</singleString>
+            </subObject>
+        </entry>
+        <entry>
+            <subObject>
+                <singleString>anyKey3</singleString>
+            </subObject>
+        </entry>
+        <entry>
+            <subObject>
+                <singleString>anyKey4</singleString>
+            </subObject>
+            <subObject>
+                <singleString>anyValue4</singleString>
+            </subObject>
+        </entry>
+    </typedMap>
 	<list>
 		<value>567</value>
 		<value>678</value>
 		<value>789</value>
 	</list>
+	<typedList>
+        <subObject>
+            <singleString>123</singleString>
+        </subObject>
+        <subObject>
+            <singleString>234</singleString>
+        </subObject>
+        <subObject>
+            <singleString>345</singleString>
+        </subObject>
+    </typedList>
 	<singleEnum>ENUM_VALUE2</singleEnum>
 	<emptyValue></emptyValue>
 	<zonedDateTime>2017-11-08T15:55:32Z</zonedDateTime>

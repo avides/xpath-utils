@@ -175,6 +175,13 @@ public class XPathUnmarshaller
     public <T> T unmarshal(Element root, Class<T> type)
     {
         final T target;
+
+        @SuppressWarnings("unchecked") Function<String, T> defaultConverter = (Function<String, T>) defaultToTypeConverters.get(type);
+        if (defaultConverter != null)
+        {
+            return defaultConverter.apply(root.getValue());
+        }
+
         try
         {
             target = type.newInstance();

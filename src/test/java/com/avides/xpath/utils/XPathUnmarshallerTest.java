@@ -38,5 +38,6 @@ public class XPathUnmarshallerTest extends XPathTestSupport
         assertThat(anyObject.getAnyStringList()).containsExactly("567", "678", "789");
         assertThat(anyObject.getAnyIntegerList()).containsExactly(Integer.valueOf(567), Integer.valueOf(678), Integer.valueOf(789));
         assertThat(anyObject.getAnyEnum()).isSameAs(AnyEnum.ENUM_VALUE2);
+        assertThat(anyObject.getEmptyEnum()).isNull();
     }
 }
