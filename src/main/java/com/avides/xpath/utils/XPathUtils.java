@@ -1630,6 +1630,7 @@ public abstract class XPathUtils
         return converter;
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T unmarshallOrConvert(Node node, Class<T> subType, Function<String, T> converter)
     {
         if (node != null)
@@ -1641,6 +1642,10 @@ public abstract class XPathUtils
             else if (converter != null)
             {
                 return converter.apply(node.getValue());
+            }
+            else if ((subType == null) || (subType == String.class))
+            {
+                return (T) node.getValue();
             }
         }
         return null;
