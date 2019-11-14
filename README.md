@@ -1,17 +1,18 @@
-xpath-utils
-===========
+# xpath-utils
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.avides.xpath/xpath-utils/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.avides.xpath/xpath-utils)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8bd9fcd993a54a18a62f9706795a5a55)](https://www.codacy.com/app/avides-builds/xpath-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=avides/xpath-utils&amp;utm_campaign=Badge_Grade)
-[![Coverage Status](https://coveralls.io/repos/github/avides/xpath-utils/badge.svg?branch=master)](https://coveralls.io/github/avides/xpath-utils?branch=master)
-[![Build Status](https://travis-ci.org/avides/xpath-utils.svg?branch=master)](https://travis-ci.org/avides/xpath-utils)
+[![Build](https://github.com/avides/xpath-utils/workflows/release/badge.svg)](https://github.com/avides/xpath-utils/actions)
+[![Nightly build](https://github.com/avides/xpath-utils/workflows/nightly/badge.svg)](https://github.com/avides/xpath-utils/actions)
+[![Coverage report](https://sonarcloud.io/api/project_badges/measure?project=avides_xpath-utils&metric=coverage)](https://sonarcloud.io/dashboard?id=avides_xpath-utils)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=avides_xpath-utils&metric=alert_status)](https://sonarcloud.io/dashboard?id=avides_xpath-utils)
+[![Technical dept](https://sonarcloud.io/api/project_badges/measure?project=avides_xpath-utils&metric=sqale_index)](https://sonarcloud.io/dashboard?id=avides_xpath-utils)
 
 #### Maven
 ```xml
 <dependency>
     <groupId>com.avides.xpath</groupId>
     <artifactId>xpath-utils</artifactId>
-    <version>1.1.4.RELEASE</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 #### Available methods
@@ -154,21 +155,21 @@ class AnyObject
     @XPathFirst("anyStringValue")
     String stringValue;
 
-    // All known default-converters are already registered for conversion 
-    // to default-field-types, so the converterClass could be left here, 
-    // but is set for illustration:    
+    // All known default-converters are already registered for conversion
+    // to default-field-types, so the converterClass could be left here,
+    // but is set for illustration:
     @XPathFirst(value = "anyIntegerValue", converterClass = ToIntegerConverter.class)
     Integer integerValue;
-    
+
     @XPathList("stringList/value")
     List<String> stringList;
-    
+
     @XPathList(value = "integerList/value", converterClass = ToIntegerConverter.class)
     List<Integer> integerList;
-    
+
     @XPathMap(entryXPath = "stringMap/entry", keySubXPath = "string[1]", valueSubXPath = "string[2]")
     Map<String, String> stringMap;
-    
+
     @XPathMap(entryXPath = "integerMap/entry", keySubXPath = "string[1]", valueSubXPath = "string[2]", valueConverterClass = ToIntegerConverter.class)
     Map<String, Integer> integerMap;
 }
